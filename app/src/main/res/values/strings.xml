@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">BusyAlert</string>
+    <string name="text_home">Home</string>
+    <string name="text_social">Social</string>
+    <string name="text_options">Options</string>
+    <string name="btn_monitoring">Start monitoring</string>
+    <string name="btn_notifications">Recive notifications</string>
 </resources>
