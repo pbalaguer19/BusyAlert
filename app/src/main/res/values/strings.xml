@@ -5,4 +5,7 @@
     <string name="text_options">Options</string>
     <string name="btn_monitoring">Start monitoring</string>
     <string name="btn_notifications">Recive notifications</string>
+
+    <string name="opt_speed">Busied when speed is higher than:</string>
+
 </resources>

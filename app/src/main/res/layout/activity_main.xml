@@ -6,42 +6,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.pau.busyalert.MainActivity">
 
-    <android.support.design.widget.TabLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <android.support.design.widget.TabItem
-            android:layout_width="wrap_content"
+        <include
             android:layout_height="wrap_content"
-            android:text="@string/text_home" />
+            android:layout_width="match_parent"
+            layout="@layout/toolbar_layout" />
 
-        <android.support.design.widget.TabItem
-            android:layout_width="wrap_content"
+        <android.support.design.widget.TabLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/text_social" />
+            android:id="@+id/tabLayout"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:tabIndicatorColor="@android:color/white">
+        </android.support.design.widget.TabLayout>
 
-        <android.support.design.widget.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_options" />
-    </android.support.design.widget.TabLayout>
+    </android.support.design.widget.AppBarLayout>
 
-    <Switch
-        android:text="@string/btn_monitoring"
+    <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/switch1" />
+        android:layout_height="match_parent"
+        android:id="@+id/viewPager">
 
-    <Switch
-        android:text="@string/btn_notifications"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/switch2" />
+    </android.support.v4.view.ViewPager>
 
 </LinearLayout>
