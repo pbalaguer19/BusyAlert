@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_drive"
+        android:key="driving_prefs">
+
+        <ListPreference
+            android:key="speed_key"
+            android:title="@string/opt_speed"
+            android:summary="@string/opt_speed_desc"
+            android:entryValues="@array/speed_options"
+            android:entries="@array/speed_options"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_user"
+        android:key="user_prefs">
+
+        <EditTextPreference
+            android:key="username_key"
+            android:title="@string/opt_usermane"
+            android:summary="@string/opt_example_username"
+            android:dialogTitle="@string/opt_example_username" />
+
+        <EditTextPreference
+            android:key="phone_key"
+            android:title="@string/opt_phone"
+            android:summary="@string/opt_phone_desc"
+            android:dialogTitle="@string/opt_phone_desc" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -16,10 +16,6 @@ public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
 
-    /** OPTIONS VARIABLES **/
-    SeekBar seekBar;
-    TextView speed;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,26 +33,5 @@ public class MainActivity extends AppCompatActivity {
         viewPagerAdapter.addFragments(new OptionsFragment(), "Options");
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
-
-        /*seekBar = (SeekBar) findViewById(R.id.seekBar);
-        speed = (TextView) findViewById(R.id.speed);
-        speed.setText("15");
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                speed.setText(String.valueOf(i));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });*/
     }
 }
