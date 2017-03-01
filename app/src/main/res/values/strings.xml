@@ -2,7 +2,7 @@
     <string name="app_name">BusyAlert</string>
     <string name="text_home">Home</string>
     <string name="text_social">Social</string>
-    <string name="text_options">Options</string>
+    <string name="text_options">Settings</string>
     <string name="btn_monitoring">Start monitoring</string>
     <string name="btn_notifications">Recive notifications</string>
 
@@ -16,4 +16,8 @@
     <string name="opt_example_username">johnsmith</string>
     <string name="opt_phone">Phone number</string>
     <string name="opt_phone_desc">Phone number linked to your accound</string>
+    <string name="title_activity_settings">Settings</string>
+
+
+
 </resources>
