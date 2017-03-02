@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragments(new HomeFragment(), "Home");
+        viewPagerAdapter.addFragments(new FavouritesFragment(), "Favourites");
         viewPagerAdapter.addFragments(new SocialFragment(), "Social");
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);

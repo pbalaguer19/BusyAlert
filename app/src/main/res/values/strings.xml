@@ -20,5 +20,9 @@
 
     <!-- SOCIAL -->
     <string name="no_numbers">No phone numbers found</string>
+    <string name="opt_delete">Delete from favourites</string>
+    <string name="opt_add_favourites">Add to favourites</string>
+    <string name="toast_added">Contact added to favourites!</string>
+    <string name="toast_deleted">Contact removed from favourites!</string>
 
 </resources>
