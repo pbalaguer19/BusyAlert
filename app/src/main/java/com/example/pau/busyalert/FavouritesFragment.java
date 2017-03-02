@@ -32,9 +32,9 @@ public class FavouritesFragment extends ListFragment implements LoaderManager.Lo
         setEmptyText(getResources().getString(R.string.no_numbers));
 
         mAdapter = new SimpleCursorAdapter(getActivity(),
-                android.R.layout.simple_list_item_2, null, new String[]{
+                R.layout.contact_list, null, new String[]{
                 Contacts.DISPLAY_NAME, Contacts.CONTACT_STATUS},
-                new int[]{android.R.id.text1, android.R.id.text2}, 0);
+                new int[]{R.id.name, R.id.status}, 0);
         setListAdapter(mAdapter);
 
         getLoaderManager().initLoader(0, null, this);

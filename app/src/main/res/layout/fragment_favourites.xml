@@ -4,5 +4,9 @@
     android:layout_height="match_parent"
     tools:context="com.example.pau.busyalert.FavouritesFragment">
 
-
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@android:id/list"
+        android:drawSelectorOnTop="true"/>
 </FrameLayout>
