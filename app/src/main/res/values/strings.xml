@@ -18,6 +18,7 @@
     <string name="opt_phone_desc">Phone number linked to your accound</string>
     <string name="title_activity_settings">Settings</string>
 
-
+    <!-- SOCIAL -->
+    <string name="no_numbers">No phone numbers found</string>
 
 </resources>

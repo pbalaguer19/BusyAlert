@@ -18,7 +18,7 @@ public class SocialFragment extends ListFragment implements LoaderManager.Loader
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setEmptyText("No phone numbers");
+        setEmptyText(getResources().getString(R.string.no_numbers));
 
         mAdapter = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.simple_list_item_2, null, new String[]{

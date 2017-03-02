@@ -9,7 +9,7 @@
             android:key="speed_key"
             android:title="@string/opt_speed"
             android:summary="@string/opt_speed_desc"
-            android:entryValues="@array/speed_options"
+            android:entryValues="@array/speed_values"
             android:entries="@array/speed_options"/>
 
     </PreferenceCategory>
