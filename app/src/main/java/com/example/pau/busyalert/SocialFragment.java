@@ -23,7 +23,7 @@ import android.widget.Toast;
 public class SocialFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>,
         AdapterView.OnItemLongClickListener{
     private SimpleCursorAdapter mAdapter;
-    private static final int CONTACT_ID = Menu.FIRST + 1;
+    private static final int CONTACT_ID = Menu.FIRST + 2;
 
 
     @Override
@@ -84,7 +84,9 @@ public class SocialFragment extends ListFragment implements LoaderManager.Loader
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Toast.makeText(getContext(),R.string.toast_added, Toast.LENGTH_LONG).show();
+        if(item.getItemId() == CONTACT_ID) {
+            Toast.makeText(getContext(), R.string.toast_added, Toast.LENGTH_LONG).show();
+        }
         return super.onContextItemSelected(item);
     }
 }
