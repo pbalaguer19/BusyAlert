@@ -3,6 +3,7 @@
     package="com.example.pau.busyalert">
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -19,7 +20,9 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".LoginActivity" />
+
+        <receiver android:name=".LocatBroadcastReciver"/>
     </application>
 
 </manifest>
