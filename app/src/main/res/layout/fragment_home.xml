@@ -5,6 +5,45 @@
     android:orientation="vertical"
     tools:context="com.example.pau.busyalert.HomeFragment">
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="2dp">
+
+
+        <ImageView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            app:srcCompat="@drawable/user"
+            android:id="@+id/userPicture"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginBottom="20dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/name"
+            android:textSize="30sp"
+            android:layout_marginTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_toRightOf="@+id/userPicture"
+            android:textStyle="normal|bold"
+            android:text="John Smith" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/status"
+            android:textSize="18sp"
+            android:layout_below="@+id/name"
+            android:layout_alignLeft="@id/name"
+            android:text="Available" />
+    </RelativeLayout>
+
+
     <Switch
         android:text="@string/btn_monitoring"
         android:layout_width="match_parent"
@@ -16,5 +55,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/switch2" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button1"
+        style="@style/Widget.AppCompat.Button.Colored" />
+
+    <Button
+        android:text="Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored" />
 
 </LinearLayout>

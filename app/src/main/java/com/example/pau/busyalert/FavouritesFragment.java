@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.util.ArraySet;
 import android.text.Editable;
@@ -34,11 +35,18 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     private ListView listv;
     private EditText textSearch;
     private static final int DELETE_ID = Menu.FIRST + 1;
+    private boolean isSearrching = false; //Used for deleting in search
+    private List<User> searchingList;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setUser = new ArraySet<>();
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setUser = new ArraySet<>();
         getContacts();
         showContacts(contact_list);
         registerForContextMenu(listv);
@@ -50,7 +58,9 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(charSequence.toString().equals("")){
                     showContacts(contact_list);
+                    isSearrching = false;
                 }else{
+                    isSearrching = true;
                     searchItem(charSequence.toString());
                 }
             }
@@ -83,7 +93,12 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     public boolean onContextItemSelected(MenuItem item) {
         if(item.getItemId() == DELETE_ID){
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-            contact_list = remove_contact((int)info.id);
+
+            if(isSearrching)
+                contact_list = remove_contact_searching((int)info.id);
+            else
+                contact_list = remove_contact((int)info.id);
+
             showContacts(contact_list);
             mAdapter.notifyDataSetChanged();
             Toast.makeText(getContext(),R.string.toast_deleted, Toast.LENGTH_LONG).show();
@@ -92,6 +107,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     }
 
     private void getContacts(){
+
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         String[] projection    = new String[] {ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER};
@@ -124,12 +140,12 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     }
 
     private void searchItem(String text){
-        List<User> newList = new ArrayList<>();
+        searchingList = new ArrayList<>();
         for(User u: contact_list){
-            if(u.getName().toLowerCase().startsWith(text.toLowerCase()))
-                newList.add(u);
+            if(u != null && u.getName().toLowerCase().startsWith(text.toLowerCase()))
+                searchingList.add(u);
         }
-        showContacts(newList.toArray(new User[newList.size()]));
+        showContacts(searchingList.toArray(new User[searchingList.size()]));
     }
 
     private User[] remove_contact(int position){
@@ -142,6 +158,22 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
                 iterator.remove();
             counter++;
         }
+        return list.toArray(new User[list.size()]);
+    }
+
+    private User[] remove_contact_searching(int position){
+        User removeUser = searchingList.get(position);
+
+        List<User> list = new ArrayList<>(Arrays.asList(contact_list));
+        Iterator<User> iterator = list.iterator();
+        while(iterator.hasNext()){
+            User actualUser = iterator.next();
+            if(actualUser == removeUser)
+                iterator.remove();
+        }
+
+        if(textSearch.isEnabled())
+            textSearch.setText("");
         return list.toArray(new User[list.size()]);
     }
 }

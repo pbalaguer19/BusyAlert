@@ -46,7 +46,6 @@ public class UserAdapter extends ArrayAdapter<User> {
         User user = this.users[position];
         userHolder.username.setText(user.getName());
         userHolder.userstatus.setText(user.getStatus());
-
         return row;
     }
 
