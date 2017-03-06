@@ -24,5 +24,6 @@
     <string name="opt_add_favourites">Add to favourites</string>
     <string name="toast_added">Contact %1$s added to favourites!</string>
     <string name="toast_deleted">Contact removed from favourites!</string>
+    <string name="search">Search</string>
 
 </resources>

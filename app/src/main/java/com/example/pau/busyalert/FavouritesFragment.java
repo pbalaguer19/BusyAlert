@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.ListFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -24,23 +27,41 @@ import java.util.List;
 
 public class FavouritesFragment extends ListFragment implements AdapterView.OnItemLongClickListener{
     private UserAdapter mAdapter;
-    private User[] contact_list = {new User(), new User()};
+    private User[] contact_list;
     private ListView listv;
+    private EditText textSearch;
     private static final int DELETE_ID = Menu.FIRST + 1;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getContacts();
-        mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);
-        listv.setAdapter(mAdapter);
+        showContacts(contact_list);
         registerForContextMenu(listv);
+
+        textSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(charSequence.toString().equals("")){
+                    showContacts(contact_list);
+                }else{
+                    searchItem(charSequence.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_favourites, container, false);
         listv = (ListView) root.findViewById(android.R.id.list);
+        textSearch = (EditText) root.findViewById(R.id.txtSearch);
         return root;
     }
 
@@ -60,8 +81,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         if(item.getItemId() == DELETE_ID){
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
             contact_list = remove_contact((int)info.id);
-            mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);
-            listv.setAdapter(mAdapter);
+            showContacts(contact_list);
             mAdapter.notifyDataSetChanged();
             Toast.makeText(getContext(),R.string.toast_deleted, Toast.LENGTH_LONG).show();
         }
@@ -91,6 +111,20 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
                 i++;
             } while (people.moveToNext());
         }
+    }
+
+    private void showContacts(User[] contact_list){
+        mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);
+        listv.setAdapter(mAdapter);
+    }
+
+    private void searchItem(String text){
+        List<User> newList = new ArrayList<>();
+        for(User u: contact_list){
+            if(u.getName().toLowerCase().startsWith(text.toLowerCase()))
+                newList.add(u);
+        }
+        showContacts(newList.toArray(new User[newList.size()]));
     }
 
     private User[] remove_contact(int position){
