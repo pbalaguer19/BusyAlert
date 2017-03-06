@@ -1,8 +1,7 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.example.pau.busyalert.HomeFragment">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -31,7 +30,7 @@
             android:paddingBottom="10dp"
             android:layout_toRightOf="@+id/userPicture"
             android:textStyle="normal|bold"
-            android:text="John Smith" />
+            android:text="@string/username"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -40,34 +39,37 @@
             android:textSize="18sp"
             android:layout_below="@+id/name"
             android:layout_alignLeft="@id/name"
-            android:text="Available" />
+            android:text="@string/userstatus" />
     </RelativeLayout>
 
 
-    <Switch
-        android:text="@string/btn_monitoring"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/switch1" />
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_monitoring"
+            android:id="@+id/btnMonitoring"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_marginBottom="15dp"/>
 
-    <Switch
-        android:text="@string/btn_notifications"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/switch2" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_notifications"
+            android:id="@+id/btnNotifications"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_marginBottom="15dp"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button1"
-        style="@style/Widget.AppCompat.Button.Colored" />
-
-    <Button
-        android:text="Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/button"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored" />
-
-</LinearLayout>
+        <Button
+            android:text="@string/btn_notifications_premium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnPremiumNotifications"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored" />
+    </LinearLayout>
+</RelativeLayout>

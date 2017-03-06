@@ -3,8 +3,6 @@
     <string name="text_home">Home</string>
     <string name="text_social">Social</string>
     <string name="text_options">Settings</string>
-    <string name="btn_monitoring">Start monitoring</string>
-    <string name="btn_notifications">Recive notifications</string>
 
     <!-- Options -->
     <string name="pref_drive">Drive options</string>
@@ -26,4 +24,24 @@
     <string name="toast_deleted">Contact removed from favourites!</string>
     <string name="search">Search</string>
 
+    <!-- HOME -->
+    <string name="username">John Smith</string>
+    <string name="userstatus">Available</string>
+    <string name="btn_monitoring">Start monitoring</string>
+    <string name="btn_monitoring_stop">Stop monitoring</string>
+    <string name="btn_notifications">Recive notifications</string>
+    <string name="btn_notifications_stop">Stop reciving notifications</string>
+    <string name="btn_notifications_premium">Send premium notifications</string>
+    <string name="enable_notifications">The notifications are enabled</string>
+    <string name="disable_notifications">The notifications are disabled</string>
+    <string name="enable_monitoring">Monitoring has started</string>
+    <string name="disable_monitoring">Monitoring has stopped</string>
+
+    <!-- PREMIUM NOTIFICATIONS -->
+    <string name="noti_meeting">Meeting</string>
+    <string name="noti_sleeping">Sleeping</string>
+    <string name="noti_other">Other</string>
+    <string name="meeting_toast">Meeting notification sent</string>
+    <string name="sleeping_toast">Sleeping notification sent</string>
+    <string name="other_toast">Other notification sent</string>
 </resources>

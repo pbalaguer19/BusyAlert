@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/optMeeting" android:title="@string/noti_meeting"/>
+    <item android:id="@+id/optSleeping" android:title="@string/noti_sleeping"/>
+    <item android:id="@+id/optOther" android:title="@string/noti_other"/>
+</menu>
