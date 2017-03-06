@@ -11,6 +11,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,21 +34,39 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
     private UserAdapter mAdapter;
     private User[] contact_list = {new User(), new User()};
     private ListView listv;
+    private EditText textSearch;
     private static final int CONTACT_ID = Menu.FIRST + 2;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getContacts();
-        mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);
-        listv.setAdapter(mAdapter);
+        showContacts(contact_list);
         registerForContextMenu(listv);
+
+        textSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(charSequence.toString().equals("")){
+                    showContacts(contact_list);
+                }else{
+                    searchItem(charSequence.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_favourites, container, false);
+        View root = inflater.inflate(R.layout.fragment_social, container, false);
         listv = (ListView) root.findViewById(android.R.id.list);
+        textSearch = (EditText) root.findViewById(R.id.txtSearchSocial);
         return root;
     }
 
@@ -68,6 +89,20 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
             Toast.makeText(getContext(), getString(R.string.toast_added, name), Toast.LENGTH_LONG).show();
         }
         return super.onContextItemSelected(item);
+    }
+
+    private void showContacts(User[] contact_list){
+        mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);
+        listv.setAdapter(mAdapter);
+    }
+
+    private void searchItem(String text){
+        List<User> newList = new ArrayList<>();
+        for(User u: contact_list){
+            if(u.getName().toLowerCase().startsWith(text.toLowerCase()))
+                newList.add(u);
+        }
+        showContacts(newList.toArray(new User[newList.size()]));
     }
 
     private void getContacts() {

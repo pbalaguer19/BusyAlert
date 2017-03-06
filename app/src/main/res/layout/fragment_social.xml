@@ -6,6 +6,17 @@
     android:orientation="vertical"
     tools:context="com.example.pau.busyalert.SocialFragment">
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtSearchSocial"
+        android:hint="@string/search"
+        android:drawableLeft="@android:drawable/ic_menu_search"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp" />
+
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
