@@ -2,7 +2,9 @@ package com.example.pau.busyalert;
 
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -19,56 +21,32 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
-public class SocialFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        AdapterView.OnItemLongClickListener{
-    private SimpleCursorAdapter mAdapter;
+
+public class SocialFragment extends ListFragment implements AdapterView.OnItemLongClickListener {
+    private UserAdapter mAdapter;
+    private User[] contact_list = {new User(), new User()};
+    private ListView listv;
     private static final int CONTACT_ID = Menu.FIRST + 2;
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setEmptyText(getResources().getString(R.string.no_numbers));
-
-        mAdapter = new SimpleCursorAdapter(getActivity(),
-                R.layout.contact_list, null, new String[]{Contacts.DISPLAY_NAME, Contacts.CONTACT_STATUS},
-                new int[]{R.id.name, R.id.status}, 0);
-        setListAdapter(mAdapter);
-
-        getLoaderManager().initLoader(0, null, this);
+        getContacts();
+        mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);
+        listv.setAdapter(mAdapter);
+        registerForContextMenu(listv);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, container, savedInstanceState);
-        registerForContextMenu(root);
+        View root = inflater.inflate(R.layout.fragment_favourites, container, false);
+        listv = (ListView) root.findViewById(android.R.id.list);
         return root;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        getListView().setOnItemLongClickListener(this);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection = {Contacts._ID, Contacts.DISPLAY_NAME,
-                Contacts.CONTACT_STATUS};
-        return new CursorLoader(getActivity(), Contacts.CONTENT_URI,
-                projection, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mAdapter.swapCursor(cursor);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
     }
 
     @Override
@@ -84,10 +62,36 @@ public class SocialFragment extends ListFragment implements LoaderManager.Loader
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if(item.getItemId() == CONTACT_ID) {
-            Toast.makeText(getContext(), R.string.toast_added, Toast.LENGTH_LONG).show();
+        if (item.getItemId() == CONTACT_ID) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            String name = contact_list[(int) info.id].getName();
+            Toast.makeText(getContext(), getString(R.string.toast_added, name), Toast.LENGTH_LONG).show();
         }
         return super.onContextItemSelected(item);
     }
-}
 
+    private void getContacts() {
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER};
+
+        Cursor people = getContext().getContentResolver().query(uri, projection, null, null, null);
+
+        int indexName = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+
+        contact_list = new User[people.getCount()];
+        int i = 0;
+        if (people.moveToFirst()) {
+            do {
+                String name = people.getString(indexName);
+
+                //Random status, the real one will be in the cloud.
+                if ((i % 2) == 0)
+                    contact_list[i] = new User(name, "Available");
+                else
+                    contact_list[i] = new User(name, "Busy");
+                i++;
+            } while (people.moveToNext());
+        }
+    }
+}
