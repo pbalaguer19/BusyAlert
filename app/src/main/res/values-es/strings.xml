@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BusyAlert</string>
+    <string name="btn_monitoring">Empezar a monitorizar</string>
+    <string name="btn_monitoring_stop">Parar de monitorizar</string>
+    <string name="btn_notifications">Recivir notificaciones</string>
+    <string name="btn_notifications_premium">Enviar notificaciones premium</string>
+    <string name="btn_notifications_stop">Parar de recivir notificaciones</string>
+    <string name="disable_monitoring">La monitorización ha finalizado</string>
+    <string name="disable_notifications">Las notificaciones estan desactivadas</string>
+    <string name="enable_monitoring">La monitorización ha empezado</string>
+    <string name="enable_notifications">Las notificaciones estan activadas</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="login_google">Iniciar sesión con Cuenta de Google</string>
+    <string name="login_password">Contraseña</string>
+    <string name="login_username">Usuario</string>
+    <string name="meeting_toast">Notificación \'Reunión\' enviada</string>
+    <string name="no_numbers">No se han encontrado numeros de telefono</string>
+    <string name="noti_meeting">Reunión</string>
+    <string name="noti_other">Otros</string>
+    <string name="noti_sleeping">Durmiendo</string>
+    <string name="opt_add_favourites">Añadir a favoritos</string>
+    <string name="opt_delete">Elimitar de favoritos</string>
+    <string name="opt_example_username">johnsmith</string>
+    <string name="opt_phone">Numero de telefono</string>
+    <string name="opt_phone_desc">Numero de telefono asociado a su cuenta</string>
+    <string name="opt_speed">Detección mínima de velocidad</string>
+    <string name="opt_speed_desc">Velocidad mínima para detectar una actividad al volante</string>
+    <string name="opt_usermane">Usuario</string>
+    <string name="other_toast">Notificación \'Otros\' enviado</string>
+    <string name="pref_drive">Opciones de conducción</string>
+    <string name="pref_user">Opciones de usuario</string>
+    <string name="search">Buscar</string>
+    <string name="sleeping_toast">Notificación \'Durmiendo\' enviada</string>
+    <string name="text_home">Inicio</string>
+    <string name="text_options">Ajustes</string>
+    <string name="text_social">Social</string>
+    <string name="title_activity_settings">Ajustes</string>
+    <string name="toast_added">Contacto  %1$s añadido a favoritos</string>
+    <string name="toast_deleted">Contacto eliminado de favoritos</string>
+    <string name="username">John Smith</string>
+    <string name="userstatus">Disponible</string>
+</resources>

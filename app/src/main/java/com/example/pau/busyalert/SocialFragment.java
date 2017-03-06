@@ -122,7 +122,7 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
     private void searchItem(String text){
         List<User> newList = new ArrayList<>();
         for(User u: contact_list){
-            if(u.getName().toLowerCase().startsWith(text.toLowerCase()))
+            if(u != null && u.getName().toLowerCase().startsWith(text.toLowerCase()))
                 newList.add(u);
         }
         showContacts(newList.toArray(new User[newList.size()]));

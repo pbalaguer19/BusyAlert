@@ -44,8 +44,10 @@ public class UserAdapter extends ArrayAdapter<User> {
             userHolder = (UserHolder)row.getTag();
 
         User user = this.users[position];
-        userHolder.username.setText(user.getName());
-        userHolder.userstatus.setText(user.getStatus());
+        if (user != null){
+            userHolder.username.setText(user.getName());
+            userHolder.userstatus.setText(user.getStatus());
+        }
         return row;
     }
 
