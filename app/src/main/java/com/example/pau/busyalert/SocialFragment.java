@@ -1,13 +1,17 @@
 package com.example.pau.busyalert;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.util.ArraySet;
@@ -37,13 +41,16 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
     private User[] contact_list = {new User(), new User()};
     private ListView listv;
     private EditText textSearch;
-    private Set<String> setUser; //Used for duplicated contacts
+    private Set<String> setUser = new ArraySet<>(); //Used for duplicated contacts
     private static final int CONTACT_ID = Menu.FIRST + 2;
+
+    /** Identifier for the permission request **/
+    private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setUser = new ArraySet<>();
+        getPermissionToReadUserContacts();
         getContacts();
         showContacts(contact_list);
         registerForContextMenu(listv);
@@ -94,6 +101,18 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
         }
         return super.onContextItemSelected(item);
     }
+
+    public void getPermissionToReadUserContacts() {
+
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.READ_CONTACTS)) {}
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_CONTACTS},
+                    READ_CONTACTS_PERMISSIONS_REQUEST);
+        }
+    }
+
 
     private void showContacts(User[] contact_list){
         mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);

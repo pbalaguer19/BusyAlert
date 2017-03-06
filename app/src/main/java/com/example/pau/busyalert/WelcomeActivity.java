@@ -17,8 +17,10 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+                if(!WelcomeActivity.this.isDestroyed()) {
+                    startActivity(intent);
+                    finish();
+                }
             }
         }, SPLASH_TIME_OUT);
     }
