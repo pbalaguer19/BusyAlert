@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.ListFragment;
+import android.support.v4.util.ArraySet;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
@@ -23,11 +24,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 public class FavouritesFragment extends ListFragment implements AdapterView.OnItemLongClickListener{
     private UserAdapter mAdapter;
     private User[] contact_list;
+    private Set<String> setUser; //Used for duplicated contacts
     private ListView listv;
     private EditText textSearch;
     private static final int DELETE_ID = Menu.FIRST + 1;
@@ -35,10 +38,10 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setUser = new ArraySet<>();
         getContacts();
         showContacts(contact_list);
         registerForContextMenu(listv);
-
         textSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -102,13 +105,15 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         if(people.moveToFirst()) {
             do {
                 String name   = people.getString(indexName);
-
-                //Random status, the real one will be in the cloud.
-                if((i % 2) == 0)
-                    contact_list[i] = new User(name, "Available");
-                else
-                    contact_list[i] = new User(name, "Busy");
-                i++;
+                if(!setUser.contains(name)){
+                    //Random status, the real one will be in the cloud.
+                    if((i % 2) == 0)
+                        contact_list[i] = new User(name, "Available");
+                    else
+                        contact_list[i] = new User(name, "Busy");
+                    i++;
+                    setUser.add(name);
+                }
             } while (people.moveToNext());
         }
     }

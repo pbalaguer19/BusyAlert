@@ -10,6 +10,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.util.ArraySet;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 public class SocialFragment extends ListFragment implements AdapterView.OnItemLongClickListener {
@@ -35,11 +37,13 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
     private User[] contact_list = {new User(), new User()};
     private ListView listv;
     private EditText textSearch;
+    private Set<String> setUser; //Used for duplicated contacts
     private static final int CONTACT_ID = Menu.FIRST + 2;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setUser = new ArraySet<>();
         getContacts();
         showContacts(contact_list);
         registerForContextMenu(listv);
@@ -119,13 +123,15 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
         if (people.moveToFirst()) {
             do {
                 String name = people.getString(indexName);
-
-                //Random status, the real one will be in the cloud.
-                if ((i % 2) == 0)
-                    contact_list[i] = new User(name, "Available");
-                else
-                    contact_list[i] = new User(name, "Busy");
-                i++;
+                if(!setUser.contains(name)){
+                    //Random status, the real one will be in the cloud.
+                    if((i % 2) == 0)
+                        contact_list[i] = new User(name, "Available");
+                    else
+                        contact_list[i] = new User(name, "Busy");
+                    i++;
+                    setUser.add(name);
+                }
             } while (people.moveToNext());
         }
     }
