@@ -37,6 +37,9 @@
     <string name="enable_monitoring">Monitoring has started</string>
     <string name="disable_monitoring">Monitoring has stopped</string>
 
+    <!-- NOTIFICATIONS -->
+    <string name="driving"> You are driving! </string>
+
     <!-- PREMIUM NOTIFICATIONS -->
     <string name="noti_meeting">Meeting</string>
     <string name="noti_sleeping">Sleeping</string>

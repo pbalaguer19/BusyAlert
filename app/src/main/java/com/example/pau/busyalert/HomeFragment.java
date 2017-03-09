@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -151,7 +152,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API).build();
+                .addApi(ActivityRecognition.API).build();
+                //.addApi(LocationServices.API).build();
     }
 
     /**
@@ -193,18 +195,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
 
             return;
         }
-        Intent locationIntent = new Intent(getContext(),
+        /*Intent locationIntent = new Intent(getContext(),
                 LocatBroadcastReciver.class);
         pendingIntent = PendingIntent.getBroadcast(getContext(),
                 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-                mLocationRequest, pendingIntent);
+                mLocationRequest, pendingIntent);*/
+
+        Intent intent = new Intent(getContext(), ActivityRecognitionService.class);
+        pendingIntent = PendingIntent.getService(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleApiClient, UPDATE_INTERVAL, pendingIntent);
     }
 
     protected void stopLocationPendingIntent() {
         if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(
-                    mGoogleApiClient, pendingIntent);
+            /*LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, pendingIntent);*/
+            ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient,pendingIntent);
 
         }
     }
