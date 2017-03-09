@@ -1,5 +1,7 @@
 package com.example.pau.busyalert;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -10,6 +12,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
+    private Activity activity = this;
 
     /** Identifier for the permission request **/
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
@@ -38,6 +43,24 @@ public class MainActivity extends AppCompatActivity {
         viewPagerAdapter.addFragments(new FavouritesFragment(), "Favourites");
         viewPagerAdapter.addFragments(new SocialFragment(), "Social");
         viewPager.setAdapter(viewPagerAdapter);
+
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {}
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                View view = activity.getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+            }
+        });
         tabLayout.setupWithViewPager(viewPager);
     }
 

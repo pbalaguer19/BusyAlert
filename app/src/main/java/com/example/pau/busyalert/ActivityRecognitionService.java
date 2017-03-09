@@ -21,7 +21,7 @@ public class ActivityRecognitionService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null && ActivityRecognitionResult.hasResult(intent)) {
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-            DetectedActivity detectedActivity = result.getMostProbableActivity();
+            //DetectedActivity detectedActivity = result.getMostProbableActivity();
             handleDetectedActivity(result.getProbableActivities());
         }
     }
@@ -32,6 +32,12 @@ public class ActivityRecognitionService extends IntentService {
                     detectedActivity.getConfidence() > 70){
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
                 builder.setContentText(getString(R.string.driving));
+                builder.setSmallIcon(R.mipmap.ic_launcher);
+                builder.setContentTitle(getString(R.string.app_name));
+                NotificationManagerCompat.from(this).notify(0, builder.build());
+            }else{
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                builder.setContentText("Patata");
                 builder.setSmallIcon(R.mipmap.ic_launcher);
                 builder.setContentTitle(getString(R.string.app_name));
                 NotificationManagerCompat.from(this).notify(0, builder.build());

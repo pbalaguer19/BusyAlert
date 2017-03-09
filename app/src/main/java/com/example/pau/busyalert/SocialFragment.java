@@ -38,11 +38,12 @@ import java.util.Set;
 
 public class SocialFragment extends ListFragment implements AdapterView.OnItemLongClickListener {
     private UserAdapter mAdapter;
-    private User[] contact_list = {new User(), new User()};
+    private User[] contact_list;
     private ListView listv;
     private EditText textSearch;
     private Set<String> setUser = new ArraySet<>(); //Used for duplicated contacts
     private static final int CONTACT_ID = Menu.FIRST + 2;
+    private boolean firstTime = true;
 
     /** Identifier for the permission request **/
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
@@ -50,8 +51,11 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getPermissionToReadUserContacts();
-        getContacts();
+        if(firstTime){
+            getPermissionToReadUserContacts();
+            getContacts();
+            firstTime = false;
+        }
         showContacts(contact_list);
         registerForContextMenu(listv);
 

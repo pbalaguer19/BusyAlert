@@ -3,9 +3,9 @@
     <string name="app_name">BusyAlert</string>
     <string name="btn_monitoring">Empezar a monitorizar</string>
     <string name="btn_monitoring_stop">Parar de monitorizar</string>
-    <string name="btn_notifications">Recivir notificaciones</string>
+    <string name="btn_notifications">Recibir notificaciones</string>
     <string name="btn_notifications_premium">Enviar notificaciones premium</string>
-    <string name="btn_notifications_stop">Parar de recivir notificaciones</string>
+    <string name="btn_notifications_stop">Parar de recibir notificaciones</string>
     <string name="disable_monitoring">La monitorización ha finalizado</string>
     <string name="disable_notifications">Las notificaciones estan desactivadas</string>
     <string name="enable_monitoring">La monitorización ha empezado</string>
