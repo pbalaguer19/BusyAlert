@@ -23,11 +23,11 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".LoginActivity" />
 
-        <receiver android:name=".LocatBroadcastReciver" />
+        <receiver android:name=".LocatBroadcastReciver"/>
 
         <service
             android:name=".ActivityRecognitionService"
-            android:exported="false"></service>
+            android:exported="false" />
     </application>
 
 </manifest>
