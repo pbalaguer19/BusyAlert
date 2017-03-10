@@ -7,6 +7,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.widget.Toast;
 
 public class SettingsActivity extends PreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
@@ -45,6 +46,7 @@ public class SettingsActivity extends PreferenceActivity implements
         if (pref instanceof ListPreference) {
             ListPreference listPreference = (ListPreference) pref;
             listPreference.setSummary(listPreference.getValue());
+            Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -40,7 +40,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private Button btnMonitoring, btnNotification, btnPremium;
-    private TextView textView;
+    private TextView textView, statusText;
     private boolean monitorEnabled = false, notificationsEnabled = false;
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
@@ -76,10 +76,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         btnNotification = (Button) root.findViewById(R.id.btnNotifications);
         btnPremium = (Button) root.findViewById(R.id.btnPremiumNotifications);
         textView = (TextView) root.findViewById(R.id.name);
+        statusText = (TextView) root.findViewById(R.id.status);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String name = sharedPreferences.getString("username_key", "John Smith");
+        String status = sharedPreferences.getString("status", "Available");
         textView.setText(name);
+        statusText.setText(status);
 
         btnMonitoring.setOnClickListener(this);
         btnNotification.setOnClickListener(this);
@@ -93,7 +96,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         super.onResume();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String name = sharedPreferences.getString("username_key", "John Smith");
+        String status = sharedPreferences.getString("status", "Available");
         textView.setText(name);
+        statusText.setText(status);
     }
 
     @Override

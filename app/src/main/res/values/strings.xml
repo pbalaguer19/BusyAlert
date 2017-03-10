@@ -15,6 +15,7 @@
     <string name="opt_status">Status</string>
     <string name="opt_example_username">John Smith</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="status_changed">Your status has changed</string>
 
     <!-- SOCIAL -->
     <string name="no_numbers">No phone numbers found</string>
@@ -50,7 +51,6 @@
     <string name="meeting_toast">Meeting notification sent</string>
     <string name="sleeping_toast">Sleeping notification sent</string>
     <string name="other_toast">Other notification sent</string>
-
 
     <!-- LOGIN -->
     <string name="login_username">Username</string>

@@ -24,31 +24,43 @@ public class ActivityRecognitionService extends IntentService {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             bike = sharedPreferences.getBoolean("bike", false);
             running = sharedPreferences.getBoolean("running", false);
+            String status = sharedPreferences.getString("status", "Available");
 
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-            handleDetectedActivity(result.getMostProbableActivity());
+            String response = handleDetectedActivity(result.getMostProbableActivity());
+
+            //If the user is already busied, the notifications is not sent.
+            if(status.equals("Available") && response != null){
+                sendNotification(response);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("status", "Busy");
+                editor.apply();
+            }
         }
     }
 
-    private void handleDetectedActivity(DetectedActivity detectedActivity){
-        int confidence = detectedActivity.getConfidence();
+    private void sendNotification(String text){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setContentTitle(getString(R.string.app_name));
         builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setContentText(text);
+        NotificationManagerCompat.from(this).notify(0, builder.build());
+    }
+
+    private String handleDetectedActivity(DetectedActivity detectedActivity){
+        int confidence = detectedActivity.getConfidence();
 
         if(detectedActivity.getType() == DetectedActivity.IN_VEHICLE &&
                 confidence > 75){
-            builder.setContentText(getString(R.string.driving));
+            return getString(R.string.driving);
         }else if(bike && detectedActivity.getType() == DetectedActivity.ON_BICYCLE &&
                 confidence > 75){
-            builder.setContentText(getString(R.string.driving_bike));
+            return getString(R.string.driving_bike);
         }else if(running && detectedActivity.getType() == DetectedActivity.RUNNING &&
                 confidence > 75) {
-            builder.setContentText(getString(R.string.running));
-        }else{
-            builder.setContentText("Nothing");
+            return getString(R.string.running);
         }
-        NotificationManagerCompat.from(this).notify(0, builder.build());
+        return null;
     }
 
 }
