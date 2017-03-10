@@ -5,13 +5,17 @@
         android:title="@string/pref_drive"
         android:key="driving_prefs">
 
-        <ListPreference
-            android:key="speed_key"
-            android:title="@string/opt_speed"
-            android:summary="@string/opt_speed_desc"
-            android:entryValues="@array/speed_values"
-            android:entries="@array/speed_options"/>
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:title="@string/opt_bike"
+            android:key="bike"
+            android:summary="@string/opt_bike_desc" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:title="@string/opt_running"
+            android:key="running"
+            android:summary="@string/opt_running_desc" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -22,13 +26,12 @@
             android:key="username_key"
             android:title="@string/opt_usermane"
             android:summary="@string/opt_example_username"
-            android:dialogTitle="@string/opt_example_username" />
-
-        <EditTextPreference
-            android:key="phone_key"
-            android:title="@string/opt_phone"
-            android:summary="@string/opt_phone_desc"
-            android:dialogTitle="@string/opt_phone_desc" />
+            android:dialogTitle="@string/opt_usermane" />
+        <ListPreference
+            android:title="List preference"
+            android:entries="@array/status"
+            android:entryValues="@array/status"
+            android:key="status" />
 
     </PreferenceCategory>
 </PreferenceScreen>

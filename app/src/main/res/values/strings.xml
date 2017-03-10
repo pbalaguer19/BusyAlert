@@ -5,15 +5,15 @@
     <string name="text_options">Settings</string>
 
     <!-- Options -->
-    <string name="pref_drive">Drive options</string>
-    <string name="opt_speed">Minimum speed detection</string>
-    <string name="opt_speed_desc">Minimum speed to detect a driving activity</string>
-
+    <string name="pref_drive">Activity recognition options</string>
+    <string name="opt_bike">Detect bike activity</string>
+    <string name="opt_bike_desc">Send notifications when bike activity is detected</string>
+    <string name="opt_running">Detect running activity</string>
+    <string name="opt_running_desc">Send notifications when running activity is detected</string>
     <string name="pref_user">User options</string>
     <string name="opt_usermane">Username</string>
-    <string name="opt_example_username">johnsmith</string>
-    <string name="opt_phone">Phone number</string>
-    <string name="opt_phone_desc">Phone number linked to your accound</string>
+    <string name="opt_status">Status</string>
+    <string name="opt_example_username">John Smith</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- SOCIAL -->
@@ -39,6 +39,9 @@
 
     <!-- NOTIFICATIONS -->
     <string name="driving"> You are driving! </string>
+    <string name="driving_bike"> You are driving a bike! </string>
+    <string name="running"> You are running! </string>
+    <string name="test_notification"> This is a test notification. </string>
 
     <!-- PREMIUM NOTIFICATIONS -->
     <string name="noti_meeting">Meeting</string>

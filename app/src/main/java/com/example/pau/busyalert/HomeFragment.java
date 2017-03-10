@@ -3,14 +3,18 @@ package com.example.pau.busyalert;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -18,12 +22,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -36,6 +40,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private Button btnMonitoring, btnNotification, btnPremium;
+    private TextView textView;
     private boolean monitorEnabled = false, notificationsEnabled = false;
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
@@ -70,12 +75,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         btnMonitoring = (Button) root.findViewById(R.id.btnMonitoring);
         btnNotification = (Button) root.findViewById(R.id.btnNotifications);
         btnPremium = (Button) root.findViewById(R.id.btnPremiumNotifications);
+        textView = (TextView) root.findViewById(R.id.name);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String name = sharedPreferences.getString("username_key", "John Smith");
+        textView.setText(name);
 
         btnMonitoring.setOnClickListener(this);
         btnNotification.setOnClickListener(this);
         btnPremium.setOnClickListener(this);
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String name = sharedPreferences.getString("username_key", "John Smith");
+        textView.setText(name);
     }
 
     @Override
@@ -138,6 +156,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
             Toast.makeText(getContext(), R.string.enable_notifications,Toast.LENGTH_SHORT).show();
             notificationsEnabled = true;
             btnNotification.setText(R.string.btn_notifications_stop);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext());
+            builder.setContentTitle(getString(R.string.app_name));
+            builder.setSmallIcon(R.mipmap.ic_launcher);
+            builder.setContentText(getString(R.string.test_notification));
+            NotificationManagerCompat.from(getContext()).notify(0, builder.build());
+
         }else{
             Toast.makeText(getContext(), R.string.disable_notifications,Toast.LENGTH_SHORT).show();
             notificationsEnabled = false;
@@ -152,8 +176,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(ActivityRecognition.API).build();
-                //.addApi(LocationServices.API).build();
+                //.addApi(ActivityRecognition.API).build();
+                .addApi(LocationServices.API).build();
     }
 
     /**
@@ -195,23 +219,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
 
             return;
         }
-        /*Intent locationIntent = new Intent(getContext(),
+        Intent locationIntent = new Intent(getContext(),
                 LocatBroadcastReciver.class);
         pendingIntent = PendingIntent.getBroadcast(getContext(),
                 0, locationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-                mLocationRequest, pendingIntent);*/
+                mLocationRequest, pendingIntent);
 
-        Intent intent = new Intent(getContext(), ActivityRecognitionService.class);
-        pendingIntent = PendingIntent.getService(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleApiClient, UPDATE_INTERVAL, pendingIntent);
     }
 
     protected void stopLocationPendingIntent() {
         if (mGoogleApiClient.isConnected()) {
-            /*LocationServices.FusedLocationApi.removeLocationUpdates(
-                    mGoogleApiClient, pendingIntent);*/
-            ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient,pendingIntent);
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, pendingIntent);
+            //ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient,pendingIntent);
 
         }
     }

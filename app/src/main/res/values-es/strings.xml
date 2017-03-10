@@ -21,14 +21,12 @@
     <string name="noti_sleeping">Durmiendo</string>
     <string name="opt_add_favourites">Añadir a favoritos</string>
     <string name="opt_delete">Elimitar de favoritos</string>
-    <string name="opt_example_username">johnsmith</string>
-    <string name="opt_phone">Numero de telefono</string>
-    <string name="opt_phone_desc">Numero de telefono asociado a su cuenta</string>
-    <string name="opt_speed">Detección mínima de velocidad</string>
-    <string name="opt_speed_desc">Velocidad mínima para detectar una actividad al volante</string>
+    <string name="opt_example_username">John Smith</string>
+    <string name="opt_bike">Detectar actividad con bicicleta</string>
+    <string name="opt_bike_desc">Enviar notificaciones cuando se detecte una actividad en bicicleta</string>
     <string name="opt_usermane">Usuario</string>
     <string name="other_toast">Notificación \'Otros\' enviado</string>
-    <string name="pref_drive">Opciones de conducción</string>
+    <string name="pref_drive">Opciones de reconocimiento de actividad</string>
     <string name="pref_user">Opciones de usuario</string>
     <string name="search">Buscar</string>
     <string name="sleeping_toast">Notificación \'Durmiendo\' enviada</string>
@@ -40,4 +38,10 @@
     <string name="toast_deleted">Contacto eliminado de favoritos</string>
     <string name="username">John Smith</string>
     <string name="userstatus">Disponible</string>
+    <string name="driving">Estas conduciendo!</string>
+    <string name="opt_running">Detectar actividad corriendo</string>
+    <string name="opt_running_desc">Enviar notificaciones cuando se detecte una actividad corriendo</string>
+    <string name="running">Estas corriendo!</string>
+    <string name="driving_bike">Estas montando en bicicleta!</string>
+    <string name="test_notification">Esto es una notificación de prueba</string>
 </resources>
