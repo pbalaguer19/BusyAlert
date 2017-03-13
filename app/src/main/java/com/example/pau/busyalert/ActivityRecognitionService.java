@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
@@ -22,8 +23,7 @@ public class ActivityRecognitionService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null && ActivityRecognitionResult.hasResult(intent)) {
-            Toast.makeText(this, "Hola", Toast.LENGTH_LONG).show();
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             bike = sharedPreferences.getBoolean("bike", false);
             running = sharedPreferences.getBoolean("running", false);
             String status = sharedPreferences.getString("status", "Available");
@@ -42,11 +42,11 @@ public class ActivityRecognitionService extends IntentService {
     }
 
     private void sendNotification(String text){
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
         builder.setContentTitle(getString(R.string.app_name));
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentText(text);
-        NotificationManagerCompat.from(this).notify(0, builder.build());
+        NotificationManagerCompat.from(getApplicationContext()).notify(0, builder.build());
     }
 
     private String handleDetectedActivity(DetectedActivity detectedActivity){

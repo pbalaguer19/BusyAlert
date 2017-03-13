@@ -36,14 +36,6 @@ public class LocatBroadcastReciver extends BroadcastReceiver implements GoogleAp
     @Override
     public void onReceive(Context context, Intent intent) {
         if(LocationResult.hasResult(intent)){
-            /*LocationResult locationResult = LocationResult.extractResult(intent);
-            Location location = locationResult.getLastLocation();
-
-            double speed = location.getSpeed();
-            String text = "Location changed! Speed: " + speed;
-            Toast.makeText(context, text, Toast.LENGTH_LONG).show();*/
-
-
             this.context = context;
             // First we need to check availability of play services
             if (checkPlayServices()) {
