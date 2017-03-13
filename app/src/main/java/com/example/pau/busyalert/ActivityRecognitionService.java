@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.widget.Toast;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
@@ -21,6 +22,7 @@ public class ActivityRecognitionService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null && ActivityRecognitionResult.hasResult(intent)) {
+            Toast.makeText(this, "Hola", Toast.LENGTH_LONG).show();
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             bike = sharedPreferences.getBoolean("bike", false);
             running = sharedPreferences.getBoolean("running", false);
