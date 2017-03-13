@@ -52,15 +52,14 @@ public class ActivityRecognitionService extends IntentService {
     private String handleDetectedActivity(DetectedActivity detectedActivity){
         int confidence = detectedActivity.getConfidence();
 
-        if(detectedActivity.getType() == DetectedActivity.IN_VEHICLE &&
-                confidence > 75){
-            return getString(R.string.driving);
-        }else if(bike && detectedActivity.getType() == DetectedActivity.ON_BICYCLE &&
-                confidence > 75){
-            return getString(R.string.driving_bike);
-        }else if(running && detectedActivity.getType() == DetectedActivity.RUNNING &&
-                confidence > 75) {
-            return getString(R.string.running);
+        if(confidence >= 75){
+            if(detectedActivity.getType() == DetectedActivity.IN_VEHICLE){
+                return getString(R.string.driving);
+            }else if(bike && detectedActivity.getType() == DetectedActivity.ON_BICYCLE){
+                return getString(R.string.driving_bike);
+            }else if(running && detectedActivity.getType() == DetectedActivity.RUNNING) {
+                return getString(R.string.running);
+            }
         }
         return null;
     }
