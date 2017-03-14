@@ -1,4 +1,4 @@
-package com.example.pau.busyalert;
+package com.example.pau.busyalert.Fragments;
 
 import android.Manifest;
 import android.app.PendingIntent;
@@ -25,6 +25,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pau.busyalert.BroadcastReceivers.LocatBroadcastReciver;
+import com.example.pau.busyalert.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;

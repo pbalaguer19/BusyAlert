@@ -1,4 +1,4 @@
-package com.example.pau.busyalert;
+package com.example.pau.busyalert.Fragments;
 
 
 import android.Manifest;
@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
@@ -25,22 +24,23 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.pau.busyalert.Adapters.UserAdapter;
+import com.example.pau.busyalert.R;
+import com.example.pau.busyalert.JavaClasses.User;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 
-public class FavouritesFragment extends ListFragment implements AdapterView.OnItemLongClickListener{
+public class SocialFragment extends ListFragment implements AdapterView.OnItemLongClickListener {
     private UserAdapter mAdapter;
     private User[] contact_list;
-    private Set<String> setUser = new ArraySet<>(); //Used for duplicated contacts
     private ListView listv;
     private EditText textSearch;
-    private static final int DELETE_ID = Menu.FIRST + 1;
-    private boolean isSearrching = false; //Used for deleting in search
-    private List<User> searchingList;
+    private Set<String> setUser = new ArraySet<>(); //Used for duplicated contacts
+    private static final int CONTACT_ID = Menu.FIRST + 2;
+    private boolean firstTime = true;
 
     /** Identifier for the permission request **/
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
@@ -48,10 +48,14 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getPermissionToReadUserContacts();
-        getContacts();
+        if(firstTime){
+            getPermissionToReadUserContacts();
+            getContacts();
+            firstTime = false;
+        }
         showContacts(contact_list);
         registerForContextMenu(listv);
+
         textSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -60,9 +64,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(charSequence.toString().equals("")){
                     showContacts(contact_list);
-                    isSearrching = false;
                 }else{
-                    isSearrching = true;
                     searchItem(charSequence.toString());
                 }
             }
@@ -74,9 +76,9 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_favourites, container, false);
+        View root = inflater.inflate(R.layout.fragment_social, container, false);
         listv = (ListView) root.findViewById(android.R.id.list);
-        textSearch = (EditText) root.findViewById(R.id.txtSearch);
+        textSearch = (EditText) root.findViewById(R.id.txtSearchSocial);
         return root;
     }
 
@@ -88,22 +90,15 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, DELETE_ID, 0, R.string.opt_delete);
+        menu.add(0, CONTACT_ID, 0, R.string.opt_add_favourites);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if(item.getItemId() == DELETE_ID){
+        if (item.getItemId() == CONTACT_ID) {
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-
-            if(isSearrching)
-                contact_list = remove_contact_searching((int)info.id);
-            else
-                contact_list = remove_contact((int)info.id);
-
-            showContacts(contact_list);
-            mAdapter.notifyDataSetChanged();
-            Toast.makeText(getContext(),R.string.toast_deleted, Toast.LENGTH_LONG).show();
+            String name = contact_list[(int) info.id].getName();
+            Toast.makeText(getContext(), getString(R.string.toast_added, name), Toast.LENGTH_LONG).show();
         }
         return super.onContextItemSelected(item);
     }
@@ -119,10 +114,24 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         }
     }
 
-    private void getContacts(){
 
+    private void showContacts(User[] contact_list){
+        mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);
+        listv.setAdapter(mAdapter);
+    }
+
+    private void searchItem(String text){
+        List<User> newList = new ArrayList<>();
+        for(User u: contact_list){
+            if(u != null && u.getName().toLowerCase().startsWith(text.toLowerCase()))
+                newList.add(u);
+        }
+        showContacts(newList.toArray(new User[newList.size()]));
+    }
+
+    private void getContacts() {
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        String[] projection    = new String[] {ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+        String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER};
 
         Cursor people = getContext().getContentResolver().query(uri, projection, null, null, null);
@@ -131,9 +140,9 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
 
         contact_list = new User[people.getCount()];
         int i = 0;
-        if(people.moveToFirst()) {
+        if (people.moveToFirst()) {
             do {
-                String name   = people.getString(indexName);
+                String name = people.getString(indexName);
                 if(!setUser.contains(name)){
                     //Random status, the real one will be in the cloud.
                     if((i % 2) == 0)
@@ -145,48 +154,5 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
                 }
             } while (people.moveToNext());
         }
-    }
-
-    private void showContacts(User[] contact_list){
-        mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);
-        listv.setAdapter(mAdapter);
-    }
-
-    private void searchItem(String text){
-        searchingList = new ArrayList<>();
-        for(User u: contact_list){
-            if(u != null && u.getName().toLowerCase().startsWith(text.toLowerCase()))
-                searchingList.add(u);
-        }
-        showContacts(searchingList.toArray(new User[searchingList.size()]));
-    }
-
-    private User[] remove_contact(int position){
-        List<User> list = new ArrayList<>(Arrays.asList(contact_list));
-        Iterator<User> iterator = list.iterator();
-        int counter = 0;
-        while(iterator.hasNext()){
-            iterator.next();
-            if(counter == position)
-                iterator.remove();
-            counter++;
-        }
-        return list.toArray(new User[list.size()]);
-    }
-
-    private User[] remove_contact_searching(int position){
-        User removeUser = searchingList.get(position);
-
-        List<User> list = new ArrayList<>(Arrays.asList(contact_list));
-        Iterator<User> iterator = list.iterator();
-        while(iterator.hasNext()){
-            User actualUser = iterator.next();
-            if(actualUser == removeUser)
-                iterator.remove();
-        }
-
-        if(textSearch.isEnabled())
-            textSearch.setText("");
-        return list.toArray(new User[list.size()]);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.pau.busyalert;
+package com.example.pau.busyalert.JavaClasses;
 
 /**
  * Created by pau on 5/3/17.

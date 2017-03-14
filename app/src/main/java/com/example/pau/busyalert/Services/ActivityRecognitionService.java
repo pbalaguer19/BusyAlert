@@ -1,4 +1,4 @@
-package com.example.pau.busyalert;
+package com.example.pau.busyalert.Services;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.pau.busyalert.R;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 

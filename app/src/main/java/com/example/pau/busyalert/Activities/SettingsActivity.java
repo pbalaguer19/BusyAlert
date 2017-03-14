@@ -1,4 +1,4 @@
-package com.example.pau.busyalert;
+package com.example.pau.busyalert.Activities;
 
 import android.content.SharedPreferences;
 import android.preference.EditTextPreference;
@@ -9,6 +9,8 @@ import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.pau.busyalert.R;
 
 public class SettingsActivity extends PreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {

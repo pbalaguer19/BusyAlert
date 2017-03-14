@@ -5,7 +5,7 @@
     android:id="@+id/activity_welcome"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.pau.busyalert.WelcomeActivity"
+    tools:context="com.example.pau.busyalert.Activities.WelcomeActivity"
     android:background="@color/colorPrimary">
 
 

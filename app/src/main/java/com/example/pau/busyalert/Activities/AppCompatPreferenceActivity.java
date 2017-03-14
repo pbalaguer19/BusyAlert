@@ -1,4 +1,4 @@
-package com.example.pau.busyalert;
+package com.example.pau.busyalert.Activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package com.example.pau.busyalert;
+package com.example.pau.busyalert.Activities;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -21,6 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
+
+import com.example.pau.busyalert.Adapters.ViewPagerAdapter;
+import com.example.pau.busyalert.Fragments.FavouritesFragment;
+import com.example.pau.busyalert.Fragments.HomeFragment;
+import com.example.pau.busyalert.R;
+import com.example.pau.busyalert.Fragments.SocialFragment;
 
 public class MainActivity extends AppCompatActivity {
 
