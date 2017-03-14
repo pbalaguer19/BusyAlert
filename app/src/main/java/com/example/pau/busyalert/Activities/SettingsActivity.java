@@ -19,11 +19,13 @@ public class SettingsActivity extends PreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
     private static final int LOGOUT = 2;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         initSettings();
     }
 
@@ -68,7 +70,16 @@ public class SettingsActivity extends PreferenceActivity implements
 
         Preference pref = findPreference("username_key");
         EditTextPreference editTextPreference = (EditTextPreference) pref;
-        editTextPreference.setSummary(editTextPreference.getText());
+        String username = editTextPreference.getText();
+
+        if (username == null){
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("username_key", "John Smith");
+            editor.apply();
+            username = "John Smith";
+            editTextPreference.setText(username);
+        }
+        editTextPreference.setSummary(username);
 
         pref = findPreference("status");
         ListPreference listPreference = (ListPreference) pref;
