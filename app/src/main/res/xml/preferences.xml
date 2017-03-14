@@ -19,6 +19,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/pref_network"
+        android:key="network_prefs">
+
+        <ListPreference
+            android:title="@string/net_usage"
+            android:summary="@string/net_desc"
+            android:entries="@array/network_options"
+            android:entryValues="@array/network_values"
+            android:key="networkList" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/pref_user"
         android:key="user_prefs">
 
@@ -33,18 +46,11 @@
             android:entryValues="@array/status"
             android:key="status" />
 
-    </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/pref_network"
-        android:key="network_prefs">
-
-        <ListPreference
-            android:title="@string/net_usage"
-            android:summary="@string/net_desc"
-            android:entries="@array/network_options"
-            android:entryValues="@array/network_values"
-            android:key="networkList" />
+        <Preference
+            android:title="@string/logout"
+            android:key="logout"/>
 
     </PreferenceCategory>
+
 </PreferenceScreen>

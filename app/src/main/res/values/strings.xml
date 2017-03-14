@@ -19,6 +19,10 @@
     <string name="pref_network">Network options</string>
     <string name="net_usage">Network usage</string>
     <string name="net_desc">Network connectivity required</string>
+    <string name="logout">Logout</string>
+    <string name="exit">Are you sure you want to logout?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!-- SOCIAL -->
     <string name="no_numbers">No phone numbers found</string>

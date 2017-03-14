@@ -50,4 +50,5 @@
     <string name="opt_status">Estado</string>
     <string name="pref_network">Opciones de red</string>
     <string name="status_changed">Su estado ha cambiado</string>
+    <string name="wifi_connected">Conectado a Wi-Fi!</string>
 </resources>

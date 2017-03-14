@@ -47,10 +47,12 @@ public class MainActivity extends AppCompatActivity {
     private static boolean wifiConnected = false;
     private static boolean mobileConnected = false;
     public static boolean refreshDisplay = true;
-
     public static String sPref = null;
-
     private NetworkReceiver receiver = new NetworkReceiver();
+
+    /** ACTIVITY CODES **/
+    private static final int REQUEST_CODE = 1;
+    private static final int LOGOUT_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.settings_item) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_CODE);
         }
         return true;
     }
@@ -127,6 +129,13 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == LOGOUT_CODE){
+            finish();
         }
     }
 
