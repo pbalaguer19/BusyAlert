@@ -28,10 +28,23 @@
             android:summary="@string/opt_example_username"
             android:dialogTitle="@string/opt_usermane" />
         <ListPreference
-            android:title="List preference"
+            android:title="@string/opt_status"
             android:entries="@array/status"
             android:entryValues="@array/status"
             android:key="status" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_network"
+        android:key="network_prefs">
+
+        <ListPreference
+            android:title="@string/net_usage"
+            android:summary="@string/net_desc"
+            android:entries="@array/network_options"
+            android:entryValues="@array/network_values"
+            android:key="networkList" />
 
     </PreferenceCategory>
 </PreferenceScreen>

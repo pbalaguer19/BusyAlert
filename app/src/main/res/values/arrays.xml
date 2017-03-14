@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <string-array name="status">
-            <item>Available</item>
-            <item>Busy</item>
-        </string-array>
+    <string-array name="status">
+        <item>Available</item>
+        <item>Busy</item>
+    </string-array>
+
+    <string-array name="network_options">
+        <item>Only Wi-Fi</item>
+        <item>On any network</item>
+    </string-array>
+
+    <string-array name="network_values">
+        <item>WIFI</item>
+        <item>ANY</item>
+    </string-array>
 </resources>

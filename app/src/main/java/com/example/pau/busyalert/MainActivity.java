@@ -1,9 +1,15 @@
 package com.example.pau.busyalert;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -17,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
     /** TOOLBAR VARIABLES **/
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -26,6 +33,18 @@ public class MainActivity extends AppCompatActivity {
 
     /** Identifier for the permission request **/
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
+
+    /** Network usage **/
+    public static final String WIFI = "WIFI";
+    public static final String ANY = "ANY";
+
+    private static boolean wifiConnected = false;
+    private static boolean mobileConnected = false;
+    public static boolean refreshDisplay = true;
+
+    public static String sPref = null;
+
+    private NetworkReceiver receiver = new NetworkReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,21 +66,28 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
-            public void onPageSelected(int position) {}
+            public void onPageSelected(int position) {
+            }
 
             @Override
             public void onPageScrollStateChanged(int state) {
                 View view = activity.getCurrentFocus();
                 if (view != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
             }
         });
         tabLayout.setupWithViewPager(viewPager);
+
+        // Registers BroadcastReceiver to track network connection changes.
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        receiver = new NetworkReceiver();
+        this.registerReceiver(receiver, filter);
     }
 
     @Override
@@ -72,12 +98,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.settings_item){
+        if (item.getItemId() == R.id.settings_item) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
         return true;
     }
+
 
     // Callback with the request from calling requestPermissions(...)
     @Override
@@ -95,5 +122,75 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (receiver != null) {
+            this.unregisterReceiver(receiver);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        sPref = sharedPrefs.getString("networkList", WIFI);
+
+        updateConnectedFlags();
+
+        if (refreshDisplay) {
+            useNetwork();
+        }
+    }
+
+    public void updateConnectedFlags() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+        if (activeInfo != null && activeInfo.isConnected()) {
+            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+        } else {
+            wifiConnected = false;
+            mobileConnected = false;
+        }
+    }
+
+    public void useNetwork() {
+        if (((sPref.equals(ANY)) && (wifiConnected || mobileConnected))
+                || ((sPref.equals(WIFI)) && (wifiConnected))) {
+            // AsyncTask subclass
+        } else {
+            // No connection
+        }
+    }
+
+
+    /*********************
+     * NETWORK RECEIVER *
+     *********************/
+
+    public class NetworkReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager conn = (ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+
+            if (WIFI.equals(sPref) && networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                refreshDisplay = true;
+                Toast.makeText(context, R.string.wifi_connected, Toast.LENGTH_SHORT).show();
+            } else if (ANY.equals(sPref) && networkInfo != null) {
+                refreshDisplay = true;
+            } else {
+                refreshDisplay = false;
+                Toast.makeText(context, R.string.lost_connection, Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 }

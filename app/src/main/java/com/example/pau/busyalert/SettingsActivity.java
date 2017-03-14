@@ -30,7 +30,12 @@ public class SettingsActivity extends PreferenceActivity implements
 
         pref = findPreference("status");
         ListPreference listPreference = (ListPreference) pref;
+        if(listPreference.getValue() == null) listPreference.setValueIndex(0);
         listPreference.setSummary(listPreference.getValue());
+
+        pref = findPreference("networkList");
+        listPreference = (ListPreference) pref;
+        if(listPreference.getValue() == null) listPreference.setValueIndex(1);
     }
 
 
@@ -42,9 +47,11 @@ public class SettingsActivity extends PreferenceActivity implements
             EditTextPreference editTextPreference = (EditTextPreference) pref;
             editTextPreference.setSummary(editTextPreference.getText());
         }else if (pref instanceof ListPreference) {
-            ListPreference listPreference = (ListPreference) pref;
-            listPreference.setSummary(listPreference.getValue());
-            Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
+            if(s.equals("status")){
+                ListPreference listPreference = (ListPreference) pref;
+                listPreference.setSummary(listPreference.getValue());
+                Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
