@@ -51,4 +51,8 @@
     <string name="pref_network">Opciones de red</string>
     <string name="status_changed">Su estado ha cambiado</string>
     <string name="wifi_connected">Conectado a Wi-Fi!</string>
+    <string name="exit">Estas seguro que quieres cerrar sesión</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="no">No</string>
+    <string name="yes">Si</string>
 </resources>
