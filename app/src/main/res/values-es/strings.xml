@@ -44,4 +44,10 @@
     <string name="running">Estas corriendo!</string>
     <string name="driving_bike">Estas montando en bicicleta!</string>
     <string name="test_notification">Esto es una notificación de prueba</string>
+    <string name="lost_connection">La connexión Wi-Fi se ha perdido</string>
+    <string name="net_desc">Conexión de red requerida</string>
+    <string name="net_usage">Uso de red</string>
+    <string name="opt_status">Estado</string>
+    <string name="pref_network">Opciones de red</string>
+    <string name="status_changed">Su estado ha cambiado</string>
 </resources>
