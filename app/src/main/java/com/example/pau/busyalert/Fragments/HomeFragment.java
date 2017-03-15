@@ -101,6 +101,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         String status = sharedPreferences.getString("status", "Available");
         textView.setText(name);
         statusText.setText(status);
+
+        if(monitorEnabled) btnMonitoring.setText(R.string.btn_monitoring_stop);
+        else btnMonitoring.setText(R.string.btn_monitoring);
+
+        if(notificationsEnabled) btnNotification.setText(R.string.btn_notifications_stop);
+        else btnNotification.setText(R.string.btn_notifications);
     }
 
     @Override
