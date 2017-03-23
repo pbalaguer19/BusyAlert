@@ -55,20 +55,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(i);
                 break;
             case R.id.login_button:
-                firebaseAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (!task.isSuccessful())
-                                    Toast.makeText(getApplicationContext(), getString(R.string.connection_no), Toast.LENGTH_SHORT).show();
-                                else {
-                                    Toast.makeText(getApplicationContext(), getString(R.string.connection_ok), Toast.LENGTH_SHORT).show();
-                                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                    startActivity(i);
-                                    finish();
+                String mail = email.getText().toString();
+                if(!mail.isEmpty()){
+                    firebaseAuth.signInWithEmailAndPassword(mail, password.getText().toString())
+                            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (!task.isSuccessful())
+                                        Toast.makeText(getApplicationContext(), getString(R.string.connection_no), Toast.LENGTH_SHORT).show();
+                                    else {
+                                        Toast.makeText(getApplicationContext(), getString(R.string.connection_ok), Toast.LENGTH_SHORT).show();
+                                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                        startActivity(i);
+                                        finish();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                }else
+                    Toast.makeText(this, R.string.no_mail, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

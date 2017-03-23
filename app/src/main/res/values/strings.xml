@@ -81,4 +81,5 @@
     <string name="registration_ok">Registration completed</string>
     <string name="no_password">Passwords not matching</string>
     <string name="bad_password">Password is too short</string>
+    <string name="no_mail">Please write a mail</string>
 </resources>
