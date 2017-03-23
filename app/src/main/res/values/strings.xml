@@ -48,10 +48,10 @@
     <string name="disable_monitoring">Monitoring has stopped</string>
 
     <!-- NOTIFICATIONS -->
-    <string name="driving"> You are driving! </string>
-    <string name="driving_bike"> You are driving a bike! </string>
-    <string name="running"> You are running! </string>
-    <string name="test_notification"> This is a test notification. </string>
+    <string name="driving">"You are driving! "</string>
+    <string name="driving_bike">"You are driving a bike! "</string>
+    <string name="running">You are running!</string>
+    <string name="test_notification">This is a test notification.</string>
 
     <!-- PREMIUM NOTIFICATIONS -->
     <string name="noti_meeting">Meeting</string>
@@ -75,7 +75,7 @@
     <string name="repeat_password">Repeat Password</string>
     
     <!-- LOGIN AND REGISTER -->
-    <string name="connection_no">Connection failed</string>
+    <string name="connection_no">Invalid credentials</string>
     <string name="connection_ok">Connection completed</string>
     <string name="registration_no">Registration failed</string>
     <string name="registration_ok">Registration completed</string>
