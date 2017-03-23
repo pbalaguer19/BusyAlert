@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "134605919254",
+    "firebase_url": "https://busyalert-24192.firebaseio.com",
+    "project_id": "busyalert-24192",
+    "storage_bucket": "busyalert-24192.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:134605919254:android:b96bf1e120865963",
+        "android_client_info": {
+          "package_name": "com.example.pau.busyalert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "134605919254-f0n19kbnr36rl8hbhhmuhcor1up7qop4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBDJqQxp45q4vvhp5Y8Sjutc2kibAzWtI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
