@@ -55,4 +55,7 @@
     <string name="logout">Cerrar sesión</string>
     <string name="no">No</string>
     <string name="yes">Si</string>
+    <string name="register">Registrarse</string>
+    <string name="new_account">Crear cuenta</string>
+    <string name="repeat_password">Repite la contraseña</string>
 </resources>

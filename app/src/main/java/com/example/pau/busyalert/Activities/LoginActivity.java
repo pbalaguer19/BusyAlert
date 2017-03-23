@@ -19,11 +19,13 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button loginBtn;
+    private Button loginBtn, registerBtn;
     private EditText email;
     private EditText password;
 
-    /** FIREBASE **/
+    /**
+     * FIREBASE
+     **/
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
 
@@ -33,9 +35,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         email = (EditText) findViewById(R.id.userEmail);
-        password =(EditText) findViewById(R.id.userPassword);
+        password = (EditText) findViewById(R.id.userPassword);
         loginBtn = (Button) findViewById(R.id.login_button);
+        registerBtn = (Button) findViewById(R.id.register);
         loginBtn.setOnClickListener(this);
+        registerBtn.setOnClickListener(this);
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         databaseReference = db.getReference();
@@ -45,19 +49,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        firebaseAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful())
-                            Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT).show();
-                        else {
-                            Toast.makeText(getApplicationContext(), "Connection completed", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(i);
-                            finish();
-                        }
-                    }
-                });
+        switch (view.getId()) {
+            case R.id.register:
+                Intent i = new Intent(getApplicationContext(), RegisterActivity.class);
+                startActivity(i);
+                break;
+            case R.id.login_button:
+                firebaseAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (!task.isSuccessful())
+                                    Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT).show();
+                                else {
+                                    Toast.makeText(getApplicationContext(), "Connection completed", Toast.LENGTH_SHORT).show();
+                                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(i);
+                                    finish();
+                                }
+                            }
+                        });
+                break;
+        }
     }
 }

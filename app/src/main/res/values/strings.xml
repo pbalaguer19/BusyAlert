@@ -68,4 +68,7 @@
     <!-- NETWORK -->
     <string name="wifi_connected">Wi-Fi connected!</string>
     <string name="lost_connection">Wi-Fi connection has been lost</string>
+    <string name="register">Register</string>
+    <string name="new_account">Create Account</string>
+    <string name="repeat_password">Repeat Password</string>
 </resources>
