@@ -27,6 +27,9 @@ import com.example.pau.busyalert.Fragments.FavouritesFragment;
 import com.example.pau.busyalert.Fragments.HomeFragment;
 import com.example.pau.busyalert.R;
 import com.example.pau.busyalert.Fragments.SocialFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 1;
     private static final int LOGOUT_CODE = 2;
 
+    /** FIREBASE **/
+    private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,11 +72,17 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
 
+        // ViewPager
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragments(new HomeFragment(), "Home");
         viewPagerAdapter.addFragments(new FavouritesFragment(), "Favourites");
         viewPagerAdapter.addFragments(new SocialFragment(), "Social");
         viewPager.setAdapter(viewPagerAdapter);
+
+        // Firebase
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        databaseReference = db.getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
 
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -135,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == LOGOUT_CODE){
+            firebaseAuth.signOut();
             finish();
         }
     }

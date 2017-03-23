@@ -60,7 +60,7 @@
     <string name="other_toast">Other notification sent</string>
 
     <!-- LOGIN -->
-    <string name="login_username">Username</string>
+    <string name="login_username">Email</string>
     <string name="login_password">Password</string>
     <string name="login_button">Log In</string>
     <string name="login_google">Log In with Google Account</string>

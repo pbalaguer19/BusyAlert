@@ -13,7 +13,7 @@
     <string name="login_button">Iniciar sesión</string>
     <string name="login_google">Iniciar sesión con Cuenta de Google</string>
     <string name="login_password">Contraseña</string>
-    <string name="login_username">Usuario</string>
+    <string name="login_username">Correo electronico</string>
     <string name="meeting_toast">Notificación \'Reunión\' enviada</string>
     <string name="no_numbers">No se han encontrado numeros de telefono</string>
     <string name="noti_meeting">Reunión</string>
