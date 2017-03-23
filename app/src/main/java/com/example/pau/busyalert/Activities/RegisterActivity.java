@@ -48,21 +48,24 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         String pass1 = password1.getText().toString();
         String pass2 = password2.getText().toString();
-        if(pass1.equals(pass2)){
+
+        if(pass1.length() < 5)
+            Toast.makeText(getApplicationContext(), getString(R.string.bad_password), Toast.LENGTH_SHORT).show();
+        else if(pass1.equals(pass2)){
             firebaseAuth.createUserWithEmailAndPassword(email.getText().toString(), pass1)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(!task.isSuccessful())
-                                Toast.makeText(getApplicationContext(), "Registration failed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), getString(R.string.registration_no), Toast.LENGTH_SHORT).show();
                             else {
-                                Toast.makeText(getApplicationContext(), "Registration completed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), getString(R.string.registration_ok), Toast.LENGTH_SHORT).show();
                                 finish();
                             }
                         }
                     });
         }else{
-            Toast.makeText(getApplicationContext(), "Passwords not matching", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.no_password), Toast.LENGTH_SHORT).show();
         }
     }
 }

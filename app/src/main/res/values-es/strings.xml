@@ -58,4 +58,12 @@
     <string name="register">Registrarse</string>
     <string name="new_account">Crear cuenta</string>
     <string name="repeat_password">Repite la contraseña</string>
+    <string name="bad_password">La contraseña es demasiado corta</string>
+    <string name="connection_ok">Conexion completada</string>
+    <string name="connection_no">Ha fallado la conexion</string>
+    <string name="no_password">Las contraseñas no coinciden</string>
+    <string name="read_conctacts_ok">Permiso garantizado para leer contactos</string>
+    <string name="read_contacts_no">Permiso denegado para leer contactos</string>
+    <string name="registration_no">Ha fallado el registro</string>
+    <string name="registration_ok">Registro completado</string>
 </resources>

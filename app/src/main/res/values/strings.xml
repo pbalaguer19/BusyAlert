@@ -31,6 +31,8 @@
     <string name="toast_added">Contact %1$s added to favourites!</string>
     <string name="toast_deleted">Contact removed from favourites!</string>
     <string name="search">Search</string>
+    <string name="read_conctacts_ok">Read Contacts permission granted</string>
+    <string name="read_contacts_no">Read Contacts permission denied</string>
 
     <!-- HOME -->
     <string name="username">John Smith</string>
@@ -71,4 +73,12 @@
     <string name="register">Register</string>
     <string name="new_account">Create Account</string>
     <string name="repeat_password">Repeat Password</string>
+    
+    <!-- LOGIN AND REGISTER -->
+    <string name="connection_no">Connection failed</string>
+    <string name="connection_ok">Connection completed</string>
+    <string name="registration_no">Registration failed</string>
+    <string name="registration_ok">Registration completed</string>
+    <string name="no_password">Passwords not matching</string>
+    <string name="bad_password">Password is too short</string>
 </resources>
