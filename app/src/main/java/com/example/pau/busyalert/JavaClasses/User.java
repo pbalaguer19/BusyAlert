@@ -5,6 +5,9 @@ package com.example.pau.busyalert.JavaClasses;
  */
 
 public class User {
+    /**
+     * This class is for UserAdapter.
+     **/
     private String name;
     private String status;
 
