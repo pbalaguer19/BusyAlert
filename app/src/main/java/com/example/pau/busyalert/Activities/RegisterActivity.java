@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.pau.busyalert.JavaClasses.UserInfo;
 import com.example.pau.busyalert.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,10 +47,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        String pass1 = password1.getText().toString();
-        String pass2 = password2.getText().toString();
+        final String pass1 = password1.getText().toString();
+        final String pass2 = password2.getText().toString();
+        final String mail = email.getText().toString();
 
-        String mail = email.getText().toString();
         if(!mail.isEmpty()){
             if(pass1.length() < 6)
                 Toast.makeText(getApplicationContext(), getString(R.string.bad_password), Toast.LENGTH_SHORT).show();
@@ -61,6 +62,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                 if(!task.isSuccessful())
                                     Toast.makeText(RegisterActivity.this, getString(R.string.registration_no), Toast.LENGTH_SHORT).show();
                                 else {
+                                    saveUserInfo(mail);
                                     Toast.makeText(RegisterActivity.this, getString(R.string.registration_ok), Toast.LENGTH_SHORT).show();
                                     finish();
                                 }
@@ -70,5 +72,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 Toast.makeText(getApplicationContext(), getString(R.string.no_password), Toast.LENGTH_SHORT).show();
         }else
             Toast.makeText(getApplicationContext(), R.string.no_mail, Toast.LENGTH_SHORT).show();
+    }
+
+    private void saveUserInfo(String mail){
+        String uid = firebaseAuth.getCurrentUser().getUid();
+        UserInfo userInfo = new UserInfo(mail.split("@")[0], mail);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(uid).setValue(userInfo);
     }
 }

@@ -8,11 +8,11 @@ import java.util.List;
  */
 
 public class UserInfo {
-    private String username;
-    private String email;
-    private String status;
-    private List<UserInfo> friends;
-    private List<UserInfo> favouriteFriends;
+    public String username;
+    public String email;
+    public String status;
+    public List<UserInfo> friends;
+    public List<UserInfo> favouriteFriends;
 
     public UserInfo(String username, String email) {
         this.username = username;
@@ -30,10 +30,6 @@ public class UserInfo {
         return email;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public List<UserInfo> getFriends() {
         return friends;
     }
@@ -46,8 +42,20 @@ public class UserInfo {
         this.username = username;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public boolean isStatusBusy(){
+        return this.status.equals(Status.BUSY);
+    }
+
+    public boolean isStatusAvailable(){
+        return this.status.equals(Status.AVAILABLE);
+    }
+
+    public void setStatusToBusy(){
+        this.status = Status.BUSY;
+    }
+
+    public void setStatusToAvailable(){
+        this.status = Status.AVAILABLE;
     }
 
     public List<UserInfo> addFavouriteFriend(UserInfo userInfo){
@@ -61,7 +69,7 @@ public class UserInfo {
     }
 
     private class Status{
-        public static final String BUSY = "Busy";
-        public static final String AVAILABLE = "Available";
+        private static final String BUSY = "Busy";
+        private static final String AVAILABLE = "Available";
     }
 }
