@@ -82,4 +82,6 @@
     <string name="no_password">Passwords not matching</string>
     <string name="bad_password">Password is too short</string>
     <string name="no_mail">Please write a mail</string>
+    <string name="phone">Phone</string>
+    <string name="no_phone">Please write a phone</string>
 </resources>

@@ -67,4 +67,6 @@
     <string name="registration_no">Ha fallado el registro</string>
     <string name="registration_ok">Registro completado</string>
     <string name="no_mail">Por favor, introduce un correo</string>
+    <string name="phone">Telefono</string>
+    <string name="no_phone">Por favor, escriba un telefono</string>
 </resources>

@@ -11,15 +11,13 @@ public class UserInfo {
     public String username;
     public String email;
     public String status;
-    public List<UserInfo> friends;
-    public List<UserInfo> favouriteFriends;
+    public String phone;
 
-    public UserInfo(String username, String email) {
+    public UserInfo(String username, String email, String phone) {
         this.username = username;
         this.email = email;
         this.status = Status.AVAILABLE;
-        this.friends = new ArrayList<>();
-        this.favouriteFriends = new ArrayList<>();
+        this.phone = phone;
     }
 
     public String getUsername() {
@@ -30,16 +28,12 @@ public class UserInfo {
         return email;
     }
 
-    public List<UserInfo> getFriends() {
-        return friends;
-    }
-
-    public List<UserInfo> getFavouriteFriends() {
-        return favouriteFriends;
-    }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public boolean isStatusBusy(){
@@ -58,14 +52,8 @@ public class UserInfo {
         this.status = Status.AVAILABLE;
     }
 
-    public List<UserInfo> addFavouriteFriend(UserInfo userInfo){
-        this.favouriteFriends.add(userInfo);
-        return this.favouriteFriends;
-    }
-
-    public List<UserInfo> addFriend(UserInfo userInfo){
-        this.friends.add(userInfo);
-        return this.friends;
+    public String getPhone() {
+        return phone;
     }
 
     private class Status{

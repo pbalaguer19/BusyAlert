@@ -136,7 +136,7 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
 
         Cursor people = getContext().getContentResolver().query(uri, projection, null, null, null);
 
-        int indexName = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+        int indexName = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
 
         contact_list = new User[people.getCount()];
         int i = 0;
