@@ -69,4 +69,6 @@
     <string name="no_mail">Por favor, introduce un correo</string>
     <string name="phone">Telefono</string>
     <string name="no_phone">Por favor, escriba un telefono</string>
+    <string name="no_wifi_continue">No tienes una red Wi-Fi conectada. El registro usará la red de datos. Estas seguro de continuar?</string>
+
 </resources>

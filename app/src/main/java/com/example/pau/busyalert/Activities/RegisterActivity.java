@@ -2,8 +2,12 @@ package com.example.pau.busyalert.Activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.Settings;
@@ -11,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArraySet;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -41,10 +46,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener,
+        DialogInterface.OnClickListener{
 
     EditText email, password1, password2, phone;
     Button btn;
+
+    private boolean isSureToContinue = false;
 
     /** Identifier for the permission request **/
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
@@ -78,12 +86,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         firebaseAuth = FirebaseAuth.getInstance();
     }
 
+    //ONCLICK VIEW//
     @Override
     public void onClick(View v) {
         final String pass1 = password1.getText().toString();
         final String pass2 = password2.getText().toString();
         final String mail = email.getText().toString();
         final String phoneNumber = phone.getText().toString();
+
+        checkNetwork();
 
         if(!mail.isEmpty()){
             if(!phoneNumber.isEmpty()){
@@ -111,6 +122,27 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(getApplicationContext(), R.string.no_mail, Toast.LENGTH_SHORT).show();
     }
 
+    //ONCLICK DIALOG INTERFACE//
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        this.isSureToContinue = true;
+    }
+
+    private void checkNetwork(){
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+
+        if (activeInfo.getType() == ConnectivityManager.TYPE_WIFI){
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.no_wifi_continue)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.yes, this)
+                    .setNegativeButton(R.string.no, null)
+                    .show();
+        }
+    }
+
     private void saveInfo(String mail, String phoneNumber){
         saveUserInfo(mail, phoneNumber);
         saveUserPhoneRelation(phoneNumber);
@@ -133,7 +165,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void saveUserFriends(){
         getPermissionToReadUserContacts();
         getContacts();
-        saveUserContacts();
+        //saveUserContacts();
     }
 
     private void getPermissionToReadUserContacts() {

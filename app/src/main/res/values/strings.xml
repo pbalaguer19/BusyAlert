@@ -84,4 +84,5 @@
     <string name="no_mail">Please write a mail</string>
     <string name="phone">Phone</string>
     <string name="no_phone">Please write a phone</string>
+    <string name="no_wifi_continue">You have no Wi-Fi network enabled. The registration will use data network. Are you sure to continue?</string>
 </resources>
