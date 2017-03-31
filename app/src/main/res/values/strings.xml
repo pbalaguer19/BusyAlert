@@ -35,6 +35,8 @@
     <string name="search">Search</string>
     <string name="read_conctacts_ok">Read Contacts permission granted</string>
     <string name="read_contacts_no">Read Contacts permission denied</string>
+    <string name="empty_list_favourites">There are no favourite users</string>
+    <string name="empty_list">There are no users in your contact list</string>
 
     <!-- HOME -->
     <string name="username">John Smith</string>

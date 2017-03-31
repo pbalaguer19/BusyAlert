@@ -1,15 +1,7 @@
 package com.example.pau.busyalert.Fragments;
 
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArraySet;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -44,7 +36,6 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
     private User[] contact_list = new User[0];
     private ListView listv;
     private EditText textSearch;
-    private Set<String> setUser = new ArraySet<>(); //Used for duplicated contacts
     private static final int CONTACT_ID = Menu.FIRST + 2;
     private boolean firstTime = true;
     private List<User> tmpList = new ArrayList<>();
@@ -64,7 +55,7 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
         }
         showContacts(contact_list);
         registerForContextMenu(listv);
-
+        listv.setEmptyView(getView().findViewById( R.id.empty_list_view ));
         textSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -106,8 +97,9 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getItemId() == CONTACT_ID) {
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-            String name = contact_list[(int) info.id].getName();
-            Toast.makeText(getContext(), getString(R.string.toast_added, name), Toast.LENGTH_LONG).show();
+            User user = contact_list[(int) info.id];
+            saveFavouriteUser(user);
+            Toast.makeText(getContext(), getString(R.string.toast_added, user.getName()), Toast.LENGTH_LONG).show();
         }
         return super.onContextItemSelected(item);
     }
@@ -153,13 +145,16 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
                 if (snapshot.exists()) {
                     String name = "";
                     String status = "";
+                    String phone = "";
                     for (DataSnapshot childSnapshot: snapshot.getChildren()) {
                         if (childSnapshot.getKey().equals("username"))
                             name = childSnapshot.getValue(String.class);
                         if (childSnapshot.getKey().equals("status"))
                             status = childSnapshot.getValue(String.class);
+                        if (childSnapshot.getKey().equals("phone"))
+                            phone = childSnapshot.getValue(String.class);
                     }
-                    tmpList.add(new User(name, status));
+                    tmpList.add(new User(name, status, phone));
                     contact_list = tmpList.toArray(new User[tmpList.size()]);
                     showContacts(contact_list);
                     mAdapter.notifyDataSetChanged();
@@ -191,5 +186,12 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+
+    private void saveFavouriteUser(User user){
+        final String uid = firebaseAuth.getCurrentUser().getUid();
+        final String phone = user.getPhone();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-favourites");
+        ref.child(uid).child(phone).setValue(true);
     }
 }

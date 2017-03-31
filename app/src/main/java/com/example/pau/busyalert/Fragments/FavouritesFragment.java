@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 
 public class FavouritesFragment extends ListFragment implements AdapterView.OnItemLongClickListener{
@@ -56,6 +56,8 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         getContacts();
         showContacts(contact_list);
         registerForContextMenu(listv);
+        listv.setEmptyView(getView().findViewById( R.id.empty_list_view_fav ));
+
         textSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -73,6 +75,40 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
 
             @Override
             public void afterTextChanged(Editable editable) {}
+        });
+
+        /* Update Favourite list on ScrollUp */
+        listv.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private int currentVisibleItemCount;
+            private int currentScrollState;
+            private int currentFirstVisibleItem;
+            private int totalItem;
+
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                this.currentScrollState = scrollState;
+                this.isScrollCompleted();
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                this.currentFirstVisibleItem = firstVisibleItem;
+                this.currentVisibleItemCount = visibleItemCount;
+                this.totalItem = totalItemCount;
+
+
+            }
+
+            private void isScrollCompleted() {
+                if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
+                        && this.currentScrollState == SCROLL_STATE_IDLE) {
+                    contact_list = new User[0];
+                    tmpList = new ArrayList<>();
+                    getContacts();
+                }
+            }
         });
     }
 
@@ -114,7 +150,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
 
     private void getContacts(){
         final String uid = firebaseAuth.getCurrentUser().getUid();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-contacts");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-favourites");
         ref.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {

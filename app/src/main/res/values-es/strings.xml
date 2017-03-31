@@ -72,5 +72,7 @@
     <string name="no_wifi_continue">No tienes una red Wi-Fi conectada. El registro usará la red de datos. Estas seguro de continuar?</string>
     <string name="update">Actualitzar los contactos</string>
     <string name="contacts_updated">Contactos actualizados!</string>
+    <string name="empty_list_favourites">No tienes usuarios favoritos</string>
+    <string name="empty_list">No hay usuarios en tu lista de contactos</string>
 
 </resources>

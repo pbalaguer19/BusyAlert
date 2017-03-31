@@ -10,6 +10,7 @@ public class User {
      **/
     private String name;
     private String status;
+    private String phone;
 
     public User(){
         this.name = "John Smith";
@@ -19,6 +20,12 @@ public class User {
     public User(String name, String status){
         this.name = name;
         this.status = status;
+    }
+
+    public User(String name, String status, String phone){
+        this.name = name;
+        this.status = status;
+        this.phone = phone;
     }
 
     public String getStatus() {
@@ -35,5 +42,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }
