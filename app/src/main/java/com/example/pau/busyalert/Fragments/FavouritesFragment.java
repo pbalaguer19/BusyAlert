@@ -174,13 +174,16 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
                 if (snapshot.exists()) {
                     String name = "";
                     String status = "";
+                    String phone = "";
                     for (DataSnapshot childSnapshot: snapshot.getChildren()) {
                         if (childSnapshot.getKey().equals("username"))
                             name = childSnapshot.getValue(String.class);
                         if (childSnapshot.getKey().equals("status"))
                             status = childSnapshot.getValue(String.class);
+                        if (childSnapshot.getKey().equals("phone"))
+                            phone = childSnapshot.getValue(String.class);
                     }
-                    tmpList.add(new User(name, status));
+                    tmpList.add(new User(name, status, phone));
                     contact_list = tmpList.toArray(new User[tmpList.size()]);
                     showContacts(contact_list);
                     mAdapter.notifyDataSetChanged();
@@ -231,11 +234,14 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     private User[] remove_contact(int position){
         List<User> list = new ArrayList<>(Arrays.asList(contact_list));
         Iterator<User> iterator = list.iterator();
+        User removeUser;
         int counter = 0;
         while(iterator.hasNext()){
-            iterator.next();
-            if(counter == position)
+            removeUser = iterator.next();
+            if(counter == position){
                 iterator.remove();
+                removeFromFirebase(removeUser);
+            }
             counter++;
         }
         return list.toArray(new User[list.size()]);
@@ -243,6 +249,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
 
     private User[] remove_contact_searching(int position){
         User removeUser = searchingList.get(position);
+        removeFromFirebase(removeUser);
 
         List<User> list = new ArrayList<>(Arrays.asList(contact_list));
         Iterator<User> iterator = list.iterator();
@@ -255,5 +262,11 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         if(textSearch.isEnabled())
             textSearch.setText("");
         return list.toArray(new User[list.size()]);
+    }
+
+    private void removeFromFirebase(User user){
+        final String uid = firebaseAuth.getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-favourites");
+        ref.child(uid).child(user.getPhone()).removeValue();
     }
 }
