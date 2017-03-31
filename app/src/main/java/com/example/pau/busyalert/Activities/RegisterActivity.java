@@ -3,14 +3,12 @@ package com.example.pau.busyalert.Activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,14 +16,11 @@ import android.support.v4.util.ArraySet;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.pau.busyalert.Adapters.UserAdapter;
-import com.example.pau.busyalert.JavaClasses.User;
 import com.example.pau.busyalert.JavaClasses.UserInfo;
 import com.example.pau.busyalert.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,11 +33,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,13 +51,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     /** PHONE NUMBERS **/
     private Set<String> phones;
-    private Set<String> usersPhones = new ArraySet<>();
-    private Map<String, String> usersKeys = new HashMap<>();
 
     /**
      * FIREBASE
      **/
-    private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
 
     /*
@@ -89,7 +78,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         btn.setOnClickListener(this);
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        databaseReference = db.getReference();
         firebaseAuth = FirebaseAuth.getInstance();
     }
 

@@ -1,25 +1,54 @@
 package com.example.pau.busyalert.Activities;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.pau.busyalert.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class SettingsActivity extends PreferenceActivity implements
-        SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
+        SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener,
+        DialogInterface.OnClickListener{
 
     private static final int LOGOUT = 2;
     private SharedPreferences sharedPreferences;
+    private Set<String> phones;
+    private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
+    private boolean isSureToContinue = false;
+
+    /**
+     * FIREBASE
+     **/
+    private FirebaseAuth firebaseAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,19 +77,25 @@ public class SettingsActivity extends PreferenceActivity implements
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.exit)
-                .setCancelable(false)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        setResult(LOGOUT);
-                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                })
-                .setNegativeButton(R.string.no, null)
-                .show();
+        if(preference.getKey().equals("logout")){
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.exit)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            setResult(LOGOUT);
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .show();
+        }else if(preference.getKey().equals("update")){
+            checkNetwork();
+            if(this.isSureToContinue) updateContacts();
+        }
+
         return true;
     }
 
@@ -92,5 +127,103 @@ public class SettingsActivity extends PreferenceActivity implements
 
         Preference button = findPreference("logout");
         button.setOnPreferenceClickListener(this);
+
+        Preference update = findPreference("update");
+        update.setOnPreferenceClickListener(this);
+    }
+
+    private void checkNetwork(){
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+
+        if (activeInfo.getType() != ConnectivityManager.TYPE_WIFI){
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.no_wifi_continue)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.yes, this)
+                    .setNegativeButton(R.string.no, null)
+                    .show();
+        }else{
+            this.isSureToContinue = true;
+        }
+    }
+
+    private void updateContacts(){
+        getPermissionToReadUserContacts();
+        getContacts();
+        saveUserContacts();
+    }
+
+    private void getPermissionToReadUserContacts() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_CONTACTS)) {}
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS},
+                    READ_CONTACTS_PERMISSIONS_REQUEST);
+        }
+    }
+
+    private void getContacts() {
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER};
+
+        Cursor people = this.getContentResolver().query(uri, projection, null, null, null);
+
+        int indexName = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+
+        phones = new HashSet<>();
+        if (people.moveToFirst()) {
+            do {
+                String phone = people.getString(indexName).replace(" ", "");
+                if(phone != null && !phone.equals("") &&
+                        (phone.length() == 9 || phone.length() == 12) &&
+                        phone.contains("6")){
+                    while (!phone.startsWith("6")){
+                        phone = phone.substring(1);
+                    }
+                    phones.add(phone);
+                }
+            } while (people.moveToNext());
+        }
+    }
+
+
+    private void saveUserContacts(){
+        for (String phone: phones){
+            if(phone.length() == 9)
+                saveContact(phone);
+        }
+    }
+
+    private void saveContact(String contact){
+        final String uid = firebaseAuth.getCurrentUser().getUid();
+        final String phone = contact;
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-phone");
+
+        ref.child(contact).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-contacts");
+                    ref.child(uid).child(phone).setValue(true);
+                }
+                else {
+                    // The contact has not the app
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    //ONCLICK DIALOG INTERFACE//
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        this.isSureToContinue = true;
     }
 }

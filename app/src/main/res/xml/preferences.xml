@@ -51,6 +51,10 @@
             android:title="@string/logout"
             android:key="logout"/>
 
+        <Preference
+            android:title="@string/update"
+            android:key="update"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -23,6 +23,7 @@
     <string name="exit">Are you sure you want to logout?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="update">Update contacts</string>
 
     <!-- SOCIAL -->
     <string name="no_numbers">No phone numbers found</string>
