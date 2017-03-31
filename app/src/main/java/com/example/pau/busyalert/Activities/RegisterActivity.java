@@ -68,6 +68,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
 
+    /*
+     * Registration activity handles the following steps:
+     *  1. Create User
+     *  2. Save user Information in Firebase Database
+     *  3. Save all the phone-contacts with the app installed
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,30 +103,32 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         checkNetwork();
 
-        if(!mail.isEmpty()){
-            if(!phoneNumber.isEmpty()){
-                if(pass1.length() < 6)
-                    Toast.makeText(getApplicationContext(), getString(R.string.bad_password), Toast.LENGTH_SHORT).show();
-                else if(pass1.equals(pass2)){
-                    firebaseAuth.createUserWithEmailAndPassword(email.getText().toString(), pass1)
-                            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if(!task.isSuccessful())
-                                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_no), Toast.LENGTH_SHORT).show();
-                                    else {
-                                        saveInfo(mail, phoneNumber);
-                                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_ok), Toast.LENGTH_SHORT).show();
-                                        finish();
+        if(this.isSureToContinue){
+            if(!mail.isEmpty()){
+                if(!phoneNumber.isEmpty()){
+                    if(pass1.length() < 6)
+                        Toast.makeText(getApplicationContext(), getString(R.string.bad_password), Toast.LENGTH_SHORT).show();
+                    else if(pass1.equals(pass2)){
+                        firebaseAuth.createUserWithEmailAndPassword(email.getText().toString(), pass1)
+                                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if(!task.isSuccessful())
+                                            Toast.makeText(RegisterActivity.this, getString(R.string.registration_no), Toast.LENGTH_SHORT).show();
+                                        else {
+                                            saveInfo(mail, phoneNumber);
+                                            Toast.makeText(RegisterActivity.this, getString(R.string.registration_ok), Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    }else
+                        Toast.makeText(getApplicationContext(), getString(R.string.no_password), Toast.LENGTH_SHORT).show();
                 }else
-                    Toast.makeText(getApplicationContext(), getString(R.string.no_password), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.no_phone, Toast.LENGTH_SHORT).show();
             }else
-                Toast.makeText(getApplicationContext(), R.string.no_phone, Toast.LENGTH_SHORT).show();
-        }else
-            Toast.makeText(getApplicationContext(), R.string.no_mail, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.no_mail, Toast.LENGTH_SHORT).show();
+        }
     }
 
     //ONCLICK DIALOG INTERFACE//
@@ -133,13 +142,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
 
-        if (activeInfo.getType() == ConnectivityManager.TYPE_WIFI){
+        if (activeInfo.getType() != ConnectivityManager.TYPE_WIFI){
             new AlertDialog.Builder(this)
                     .setMessage(R.string.no_wifi_continue)
                     .setCancelable(false)
                     .setPositiveButton(R.string.yes, this)
                     .setNegativeButton(R.string.no, null)
                     .show();
+        }else{
+            this.isSureToContinue = true;
         }
     }
 
@@ -165,7 +176,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void saveUserFriends(){
         getPermissionToReadUserContacts();
         getContacts();
-        //saveUserContacts();
+        saveUserContacts();
     }
 
     private void getPermissionToReadUserContacts() {
@@ -212,8 +223,25 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void saveContact(String contact){
-        String uid = firebaseAuth.getCurrentUser().getUid();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-contacts");
-        ref.child(uid).child(contact).setValue(true);
+        final String uid = firebaseAuth.getCurrentUser().getUid();
+        final String phone = contact;
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-phone");
+
+        ref.child(contact).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-contacts");
+                    ref.child(uid).child(phone).setValue(true);
+                }
+                else {
+                    // The contact has not the app
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }
