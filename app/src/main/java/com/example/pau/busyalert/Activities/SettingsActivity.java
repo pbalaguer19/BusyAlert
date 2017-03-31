@@ -55,6 +55,7 @@ public class SettingsActivity extends PreferenceActivity implements
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        firebaseAuth = FirebaseAuth.getInstance();
         initSettings();
     }
 
@@ -153,6 +154,7 @@ public class SettingsActivity extends PreferenceActivity implements
         getPermissionToReadUserContacts();
         getContacts();
         saveUserContacts();
+        Toast.makeText(this, R.string.contacts_updated,Toast.LENGTH_SHORT).show();
     }
 
     private void getPermissionToReadUserContacts() {

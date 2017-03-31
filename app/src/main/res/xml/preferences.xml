@@ -46,14 +46,14 @@
             android:entryValues="@array/status"
             android:key="status" />
 
+        <Preference
+            android:title="@string/update"
+            android:key="update"/>
 
         <Preference
             android:title="@string/logout"
             android:key="logout"/>
 
-        <Preference
-            android:title="@string/update"
-            android:key="update"/>
 
     </PreferenceCategory>
 

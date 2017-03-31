@@ -24,6 +24,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="update">Update contacts</string>
+    <string name="contacts_updated">Contacts updated!</string>
 
     <!-- SOCIAL -->
     <string name="no_numbers">No phone numbers found</string>

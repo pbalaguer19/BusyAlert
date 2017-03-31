@@ -1,15 +1,8 @@
 package com.example.pau.busyalert.Fragments;
 
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArraySet;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,6 +20,12 @@ import android.widget.Toast;
 import com.example.pau.busyalert.Adapters.UserAdapter;
 import com.example.pau.busyalert.R;
 import com.example.pau.busyalert.JavaClasses.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,21 +36,23 @@ import java.util.Set;
 
 public class FavouritesFragment extends ListFragment implements AdapterView.OnItemLongClickListener{
     private UserAdapter mAdapter;
-    private User[] contact_list;
-    private Set<String> setUser = new ArraySet<>(); //Used for duplicated contacts
+    private User[] contact_list = new User[0];
     private ListView listv;
     private EditText textSearch;
     private static final int DELETE_ID = Menu.FIRST + 1;
     private boolean isSearrching = false; //Used for deleting in search
     private List<User> searchingList;
+    private List<User> tmpList = new ArrayList<>();
 
-    /** Identifier for the permission request **/
-    private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
+    /**
+     * FIREBASE
+     **/
+    private FirebaseAuth firebaseAuth;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getPermissionToReadUserContacts();
+        firebaseAuth = FirebaseAuth.getInstance();
         getContacts();
         showContacts(contact_list);
         registerForContextMenu(listv);
@@ -111,43 +112,70 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         return super.onContextItemSelected(item);
     }
 
-    public void getPermissionToReadUserContacts() {
+    private void getContacts(){
+        final String uid = firebaseAuth.getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-contacts");
+        ref.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot friend : snapshot.getChildren()) {
+                    String phoneNumber = friend.getKey();
+                    getUidFromPhoneNumber(phoneNumber);
+                }
+            }
 
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.READ_CONTACTS)) {}
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_CONTACTS},
-                    READ_CONTACTS_PERMISSIONS_REQUEST);
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
-    private void getContacts(){
-
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        String[] projection    = new String[] {ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.NUMBER};
-
-        Cursor people = getContext().getContentResolver().query(uri, projection, null, null, null);
-
-        int indexName = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-
-        contact_list = new User[people.getCount()];
-        int i = 0;
-        if(people.moveToFirst()) {
-            do {
-                String name   = people.getString(indexName);
-                if(!setUser.contains(name)){
-                    //Random status, the real one will be in the cloud.
-                    if((i % 2) == 0)
-                        contact_list[i] = new User(name, "Available");
-                    else
-                        contact_list[i] = new User(name, "Busy");
-                    i++;
-                    setUser.add(name);
+    private void saveFriendInfo(String friendUid) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String name = "";
+                    String status = "";
+                    for (DataSnapshot childSnapshot: snapshot.getChildren()) {
+                        if (childSnapshot.getKey().equals("username"))
+                            name = childSnapshot.getValue(String.class);
+                        if (childSnapshot.getKey().equals("status"))
+                            status = childSnapshot.getValue(String.class);
+                    }
+                    tmpList.add(new User(name, status));
+                    contact_list = tmpList.toArray(new User[tmpList.size()]);
+                    showContacts(contact_list);
+                    mAdapter.notifyDataSetChanged();
                 }
-            } while (people.moveToNext());
-        }
+                else {}
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void getUidFromPhoneNumber(String phoneNumber) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-phone");
+        ref.child(phoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot childSnapshot: snapshot.getChildren()) {
+                        saveFriendInfo(childSnapshot.getKey());
+                    }
+                }
+                else {
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     private void showContacts(User[] contact_list){
