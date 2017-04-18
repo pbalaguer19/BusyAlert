@@ -20,7 +20,6 @@ import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.pau.busyalert.R;
@@ -32,7 +31,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class SettingsActivity extends PreferenceActivity implements

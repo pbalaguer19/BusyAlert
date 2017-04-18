@@ -33,6 +33,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -55,6 +61,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     private static int FATEST_INTERVAL = 5000; // 5 sec
     private static int DISPLACEMENT = 10; // 10 meters
 
+    private SharedPreferences sharedPreferences;
+
+    /**
+     * FIREBASE
+     **/
+    private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -66,6 +80,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        databaseReference = db.getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // First we need to check availability of play services
         if (checkPlayServices()) {
@@ -80,11 +100,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         textView = (TextView) root.findViewById(R.id.name);
         statusText = (TextView) root.findViewById(R.id.status);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String name = sharedPreferences.getString("username_key", "John Smith");
-        String status = sharedPreferences.getString("status", "Available");
-        textView.setText(name);
-        statusText.setText(status);
+        getUserInfo();
+        addUserListener();
 
         btnMonitoring.setOnClickListener(this);
         btnNotification.setOnClickListener(this);
@@ -96,11 +113,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     @Override
     public void onResume() {
         super.onResume();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String name = sharedPreferences.getString("username_key", "John Smith");
-        String status = sharedPreferences.getString("status", "Available");
-        textView.setText(name);
-        statusText.setText(status);
+        getUserInfo();
 
         if(monitorEnabled) btnMonitoring.setText(R.string.btn_monitoring_stop);
         else btnMonitoring.setText(R.string.btn_monitoring);
@@ -148,6 +161,60 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
 
         }
         return super.onContextItemSelected(item);
+   }
+
+    private void getUserInfo(){
+        String uid = firebaseAuth.getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+
+        ref.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dSnap: snapshot.getChildren()) {
+                        if(dSnap.getKey().equals("username")) {
+                            String value = dSnap.getValue(String.class);
+                            textView.setText(value);
+                        }else if(dSnap.getKey().equals("status")) {
+                            String value = dSnap.getValue(String.class);
+                            statusText.setText(value);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void addUserListener(){
+        String uid = firebaseAuth.getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+
+        ref.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dSnap: snapshot.getChildren()) {
+                        if(dSnap.getKey().equals("username")) {
+                            String value = dSnap.getValue(String.class);
+                            textView.setText(value);
+                            sharedPreferences.edit().putString("username_key", value).apply();
+                        }else if(dSnap.getKey().equals("status")) {
+                            String value = dSnap.getValue(String.class);
+                            statusText.setText(value);
+                            sharedPreferences.edit().putString("status", value).apply();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     private void monitoringHandler(){
