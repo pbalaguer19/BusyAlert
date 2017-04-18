@@ -12,6 +12,9 @@ import android.widget.Toast;
 import com.example.pau.busyalert.R;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class ActivityRecognitionService extends IntentService {
@@ -38,6 +41,10 @@ public class ActivityRecognitionService extends IntentService {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("status", "Busy");
                 editor.apply();
+
+                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+                ref.child(uid).child("status").setValue("Busy");
             }
         }
     }
