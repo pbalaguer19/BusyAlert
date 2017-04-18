@@ -66,13 +66,15 @@ public class SettingsActivity extends PreferenceActivity implements
         if (pref instanceof EditTextPreference) {
             EditTextPreference editTextPreference = (EditTextPreference) pref;
             editTextPreference.setSummary(editTextPreference.getText());
+            setFirebase("username", editTextPreference.getText());
         }else if (pref instanceof ListPreference) {
             if(s.equals("status")){
                 ListPreference listPreference = (ListPreference) pref;
                 listPreference.setSummary(listPreference.getValue());
                 Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
+                setFirebase("status" ,listPreference.getValue());
             }else if(s.equals("networkList")){
-                setFirebaseNetwork(((ListPreference) pref).getValue());
+                setFirebase("network" ,((ListPreference) pref).getValue());
                 Toast.makeText(this, ((ListPreference) pref).getValue(),Toast.LENGTH_SHORT).show();
             }
         }
@@ -231,9 +233,9 @@ public class SettingsActivity extends PreferenceActivity implements
         this.isSureToContinue = true;
     }
 
-    private void setFirebaseNetwork(String type){
+    private void setFirebase(String child, String type){
         String uid = firebaseAuth.getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-        ref.child(uid).child("network").setValue(type);
+        ref.child(uid).child(child).setValue(type);
     }
 }
