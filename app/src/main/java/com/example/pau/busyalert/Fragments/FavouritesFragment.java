@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -34,7 +35,9 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class FavouritesFragment extends ListFragment implements AdapterView.OnItemLongClickListener{
+public class FavouritesFragment extends ListFragment implements AdapterView.OnItemLongClickListener,
+        View.OnClickListener {
+
     private UserAdapter mAdapter;
     private User[] contact_list = new User[0];
     private ListView listv;
@@ -43,6 +46,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     private boolean isSearrching = false; //Used for deleting in search
     private List<User> searchingList;
     private List<User> tmpList = new ArrayList<>();
+    private Button emptyBtn;
 
     /**
      * FIREBASE
@@ -117,6 +121,8 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         View root = inflater.inflate(R.layout.fragment_favourites, container, false);
         listv = (ListView) root.findViewById(android.R.id.list);
         textSearch = (EditText) root.findViewById(R.id.txtSearch);
+        emptyBtn = (Button) root.findViewById(R.id.empty_list_view_fav);
+        emptyBtn.setOnClickListener(this);
         return root;
     }
 
@@ -146,6 +152,66 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
             Toast.makeText(getContext(),R.string.toast_deleted, Toast.LENGTH_LONG).show();
         }
         return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        getContacts();
+        showContacts(contact_list);
+        registerForContextMenu(listv);
+
+        textSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(charSequence.toString().equals("")){
+                    showContacts(contact_list);
+                    isSearrching = false;
+                }else{
+                    isSearrching = true;
+                    searchItem(charSequence.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+
+        /* Update Favourite list on ScrollUp */
+        listv.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private int currentVisibleItemCount;
+            private int currentScrollState;
+            private int currentFirstVisibleItem;
+            private int totalItem;
+
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                this.currentScrollState = scrollState;
+                this.isScrollCompleted();
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                this.currentFirstVisibleItem = firstVisibleItem;
+                this.currentVisibleItemCount = visibleItemCount;
+                this.totalItem = totalItemCount;
+
+
+            }
+
+            private void isScrollCompleted() {
+                if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
+                        && this.currentScrollState == SCROLL_STATE_IDLE) {
+                    contact_list = new User[0];
+                    tmpList = new ArrayList<>();
+                    getContacts();
+                }
+            }
+        });
     }
 
     private void getContacts(){

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -31,7 +32,8 @@ import java.util.List;
 import java.util.Set;
 
 
-public class SocialFragment extends ListFragment implements AdapterView.OnItemLongClickListener {
+public class SocialFragment extends ListFragment implements AdapterView.OnItemLongClickListener,
+        View.OnClickListener {
     private UserAdapter mAdapter;
     private User[] contact_list = new User[0];
     private ListView listv;
@@ -39,6 +41,7 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
     private static final int CONTACT_ID = Menu.FIRST + 2;
     private boolean firstTime = true;
     private List<User> tmpList = new ArrayList<>();
+    Button emptyBtn;
 
     /**
      * FIREBASE
@@ -79,6 +82,8 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
         View root = inflater.inflate(R.layout.fragment_social, container, false);
         listv = (ListView) root.findViewById(android.R.id.list);
         textSearch = (EditText) root.findViewById(R.id.txtSearchSocial);
+        emptyBtn = (Button) root.findViewById(R.id.empty_list_view);
+        emptyBtn.setOnClickListener(this);
         return root;
     }
 
@@ -104,6 +109,29 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
         return super.onContextItemSelected(item);
     }
 
+
+    @Override
+    public void onClick(View v) {
+        getContacts();
+        showContacts(contact_list);
+        registerForContextMenu(listv);
+        textSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(charSequence.toString().equals("")){
+                    showContacts(contact_list);
+                }else{
+                    searchItem(charSequence.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+    }
 
     private void showContacts(User[] contact_list){
         mAdapter = new UserAdapter(getContext(), R.layout.contact_list, contact_list);

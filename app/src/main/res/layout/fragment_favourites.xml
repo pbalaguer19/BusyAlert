@@ -22,14 +22,12 @@
         android:id="@android:id/list"
         android:drawSelectorOnTop="true"/>
 
-    <TextView
+    <Button
         android:id="@+id/empty_list_view_fav"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/empty_list_favourites"
         android:visibility="gone"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"/>
+        style="@style/Widget.AppCompat.Button.Borderless.Colored" />
+
 </LinearLayout>
