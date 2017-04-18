@@ -12,12 +12,14 @@ public class UserInfo {
     public String email;
     public String status;
     public String phone;
+    public String network;
 
     public UserInfo(String username, String email, String phone) {
         this.username = username;
         this.email = email;
         this.status = Status.AVAILABLE;
         this.phone = phone;
+        this.network = Network.ANY;
     }
 
     public String getUsername() {
@@ -56,8 +58,23 @@ public class UserInfo {
         return phone;
     }
 
+    public boolean isNetworkAny(){ return this.network.equals(Network.ANY); }
+
+    public boolean isNetworkWifi(){ return this.network.equals(Network.WIFI); }
+
+    public void setNetworkToAny(){ this.network = Network.ANY; }
+
+    public void setNetworkToWifi(){ this.network = Network.WIFI; }
+
+    public String getNetwork(){ return this.network; }
+
     private class Status{
         private static final String BUSY = "Busy";
         private static final String AVAILABLE = "Available";
+    }
+
+    private class Network{
+        private static final String ANY = "ANY";
+        private static final String WIFI = "WIFI";
     }
 }

@@ -32,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class SettingsActivity extends PreferenceActivity implements
@@ -72,6 +73,9 @@ public class SettingsActivity extends PreferenceActivity implements
                 ListPreference listPreference = (ListPreference) pref;
                 listPreference.setSummary(listPreference.getValue());
                 Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
+            }else if(s.equals("networkList")){
+                setFirebaseNetwork(((ListPreference) pref).getValue());
+                Toast.makeText(this, ((ListPreference) pref).getValue(),Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -227,5 +231,11 @@ public class SettingsActivity extends PreferenceActivity implements
     @Override
     public void onClick(DialogInterface dialog, int which) {
         this.isSureToContinue = true;
+    }
+
+    private void setFirebaseNetwork(String type){
+        String uid = firebaseAuth.getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(uid).child("network").setValue(type);
     }
 }
