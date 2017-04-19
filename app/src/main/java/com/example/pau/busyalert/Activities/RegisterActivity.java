@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -147,7 +148,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private void saveUserInfo(String mail, String phone){
         String uid = firebaseAuth.getCurrentUser().getUid();
-        UserInfo userInfo = new UserInfo(mail.split("@")[0], mail, phone);
+        String token = FirebaseInstanceId.getInstance().getToken();
+        UserInfo userInfo = new UserInfo(mail.split("@")[0], mail, phone, token);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
         ref.child(uid).setValue(userInfo);
     }

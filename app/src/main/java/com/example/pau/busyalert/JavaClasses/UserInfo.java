@@ -13,13 +13,15 @@ public class UserInfo {
     public String status;
     public String phone;
     public String network;
+    public String token;
 
-    public UserInfo(String username, String email, String phone) {
+    public UserInfo(String username, String email, String phone,String token) {
         this.username = username;
         this.email = email;
         this.status = Status.AVAILABLE;
         this.phone = phone;
         this.network = Network.ANY;
+        this.token = token;
     }
 
     public String getUsername() {
@@ -67,6 +69,10 @@ public class UserInfo {
     public void setNetworkToWifi(){ this.network = Network.WIFI; }
 
     public String getNetwork(){ return this.network; }
+
+    public String getToken() {
+        return token;
+    }
 
     private class Status{
         private static final String BUSY = "Busy";
