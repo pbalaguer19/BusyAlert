@@ -242,15 +242,10 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
-                                    for (DataSnapshot dSnap: snapshot.getChildren()) {
-                                        if(dSnap.getKey().equals("token")){
-                                            String friendToken = dSnap.getValue(String.class);
+                                    String friendToken = snapshot.child("token").getValue(String.class);
 
-                                            DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("users-favourites");
-                                            ref2.child(uid).child(phone).child(friendToken).setValue(true);
-                                        }
-
-                                    }
+                                    DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("users-favourites");
+                                    ref2.child(uid).child(phone).child(friendToken).setValue(true);
                                 }
                             }
 
