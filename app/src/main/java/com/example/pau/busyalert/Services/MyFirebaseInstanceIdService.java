@@ -29,7 +29,7 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
         // If you need to handle the generation of a token, initially or after a refresh this is
         // where you should do that.
         String token = FirebaseInstanceId.getInstance().getToken();
-        sendRegistrationToServer(token);
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) sendRegistrationToServer(token);
     }
 
     private void sendRegistrationToServer(final String token){
