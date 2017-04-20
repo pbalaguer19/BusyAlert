@@ -219,7 +219,52 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
     private void saveFavouriteUser(User user){
         final String uid = firebaseAuth.getCurrentUser().getUid();
         final String phone = user.getPhone();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-favourites");
-        ref.child(uid).child(phone).setValue(true);
+
+        /*
+        * 1. Get Phone
+        * 2. Get Friend's UID
+        * 3. Get Friend's Token
+        * 4. Save Phone + Token to "users-favourites" database
+        **/
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-phone");
+        ref.child(phone).addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dSnap: snapshot.getChildren()) {
+                        String friendUid = dSnap.getKey();
+
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+                        ref.child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
+
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    for (DataSnapshot dSnap: snapshot.getChildren()) {
+                                        if(dSnap.getKey().equals("token")){
+                                            String friendToken = dSnap.getValue(String.class);
+
+                                            DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference("users-favourites");
+                                            ref2.child(uid).child(phone).child(friendToken).setValue(true);
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }
