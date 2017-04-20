@@ -167,7 +167,7 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
 
     private void saveFriendInfo(String friendUid) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-        ref.child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child(friendUid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -182,7 +182,17 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
                         if (childSnapshot.getKey().equals("phone"))
                             phone = childSnapshot.getValue(String.class);
                     }
-                    tmpList.add(new User(name, status, phone));
+
+                    boolean found = false;
+                    for(User u: tmpList){
+                        if(u.getPhone().equals(phone)) {
+                            u.setName(name);
+                            u.setStatus(status);
+                            found = true;
+                        }
+                    }
+                    if(!found) tmpList.add(new User(name, status, phone));
+
                     contact_list = tmpList.toArray(new User[tmpList.size()]);
                     showContacts(contact_list);
                     mAdapter.notifyDataSetChanged();
@@ -198,7 +208,7 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
 
     private void getUidFromPhoneNumber(String phoneNumber) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users-phone");
-        ref.child(phoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child(phoneNumber).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {

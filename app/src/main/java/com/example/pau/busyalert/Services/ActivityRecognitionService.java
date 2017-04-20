@@ -33,43 +33,41 @@ public class ActivityRecognitionService extends IntentService {
             String status = sharedPreferences.getString("status", "Available");
 
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-            String response = handleDetectedActivity(result.getMostProbableActivity());
+            boolean isBusy = handleDetectedActivity(result.getMostProbableActivity());
 
             //If the user is already busied, the notifications is not sent.
-            if(status.equals("Available") && response != null){
-                sendNotification(response);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("status", "Busy");
-                editor.apply();
-
-                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-                ref.child(uid).child("status").setValue("Busy");
+            if(status.equals("Available") && isBusy){
+                setStatus("Busy");
+            }else{
+                setStatus("Available");
             }
         }
     }
 
-    private void sendNotification(String text){
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-        builder.setContentTitle(getString(R.string.app_name));
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setContentText(text);
-        NotificationManagerCompat.from(getApplicationContext()).notify(0, builder.build());
-    }
-
-    private String handleDetectedActivity(DetectedActivity detectedActivity){
+    private boolean handleDetectedActivity(DetectedActivity detectedActivity){
         int confidence = detectedActivity.getConfidence();
 
         if(confidence >= 75){
             if(detectedActivity.getType() == DetectedActivity.IN_VEHICLE){
-                return getString(R.string.driving);
+                return true;
             }else if(bike && detectedActivity.getType() == DetectedActivity.ON_BICYCLE){
-                return getString(R.string.driving_bike);
+                return true;
             }else if(running && detectedActivity.getType() == DetectedActivity.RUNNING) {
-                return getString(R.string.running);
+                return true;
             }
         }
-        return null;
+        return false;
+    }
+
+    private void setStatus(String status){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("status", status);
+        editor.apply();
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(uid).child("status").setValue(status);
     }
 
 }

@@ -234,7 +234,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
 
     private void saveFriendInfo(String friendUid) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-        ref.child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child(friendUid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
