@@ -69,6 +69,29 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
      **/
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
+    private  DatabaseReference ref;
+    private ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot snapshot) {
+            if (snapshot.exists()) {
+                for (DataSnapshot dSnap: snapshot.getChildren()) {
+                    if(dSnap.getKey().equals("username")) {
+                        String value = dSnap.getValue(String.class);
+                        textView.setText(value);
+                        sharedPreferences.edit().putString("username_key", value).apply();
+                    }else if(dSnap.getKey().equals("status")) {
+                        String value = dSnap.getValue(String.class);
+                        statusText.setText(value);
+                        sharedPreferences.edit().putString("status", value).apply();
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
 
 
     public HomeFragment() {
@@ -117,6 +140,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     public void onResume() {
         super.onResume();
         getUserInfo();
+        addUserListener();
 
         if(monitorEnabled) btnMonitoring.setText(R.string.btn_monitoring_stop);
         else btnMonitoring.setText(R.string.btn_monitoring);
@@ -194,31 +218,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
 
     private void addUserListener(){
         String uid = firebaseAuth.getCurrentUser().getUid();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        this.ref = FirebaseDatabase.getInstance().getReference("users");
 
-        ref.child(uid).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    for (DataSnapshot dSnap: snapshot.getChildren()) {
-                        if(dSnap.getKey().equals("username")) {
-                            String value = dSnap.getValue(String.class);
-                            textView.setText(value);
-                            sharedPreferences.edit().putString("username_key", value).apply();
-                        }else if(dSnap.getKey().equals("status")) {
-                            String value = dSnap.getValue(String.class);
-                            statusText.setText(value);
-                            sharedPreferences.edit().putString("status", value).apply();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+        ref.child(uid).addValueEventListener(valueEventListener);
     }
+
+    private void removeUserListener(){
+        String uid = firebaseAuth.getCurrentUser().getUid();
+       this.ref = FirebaseDatabase.getInstance().getReference("users");
+
+        ref.child(uid).removeEventListener(valueEventListener);
+    }
+
+
 
     private void monitoringHandler(){
         if(!monitorEnabled){
@@ -379,10 +391,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     @Override
     public void onStop() {
         super.onStop();
+        removeUserListener();
         if (mGoogleApiClient != null)
             if (mGoogleApiClient.isConnected())
                 mGoogleApiClient.disconnect();
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        removeUserListener();
     }
 
     @Override

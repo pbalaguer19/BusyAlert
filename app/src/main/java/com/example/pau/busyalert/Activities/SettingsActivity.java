@@ -42,6 +42,7 @@ public class SettingsActivity extends PreferenceActivity implements
     private Set<String> phones;
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
     private boolean isSureToContinue = false;
+    private String lastName = "";
 
     /**
      * FIREBASE
@@ -65,8 +66,11 @@ public class SettingsActivity extends PreferenceActivity implements
 
         if (pref instanceof EditTextPreference) {
             EditTextPreference editTextPreference = (EditTextPreference) pref;
-            editTextPreference.setSummary(editTextPreference.getText());
-            setFirebase("username", editTextPreference.getText());
+            if(!lastName.equals(editTextPreference.getText())){
+                this.lastName = editTextPreference.getText();
+                editTextPreference.setSummary(editTextPreference.getText());
+                setFirebase("username", editTextPreference.getText());
+            }
         }else if (pref instanceof ListPreference) {
             if(s.equals("status")){
                 ListPreference listPreference = (ListPreference) pref;
