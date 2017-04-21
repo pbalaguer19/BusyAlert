@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pau.busyalert.BroadcastReceivers.LocatBroadcastReciver;
+import com.example.pau.busyalert.JavaClasses.User;
 import com.example.pau.busyalert.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -107,6 +108,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         btnNotification.setOnClickListener(this);
         btnPremium.setOnClickListener(this);
 
+        setUpNotificationsButton();
+
         return root;
     }
 
@@ -150,13 +153,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.optMeeting:
-                Toast.makeText(getContext(), R.string.meeting_toast,Toast.LENGTH_SHORT).show();
+                setStatus("Busy");
                 break;
             case  R.id.optSleeping:
-                Toast.makeText(getContext(), R.string.sleeping_toast,Toast.LENGTH_SHORT).show();
+                setStatus("Busy");
                 break;
             case R.id.optOther:
-                Toast.makeText(getContext(), R.string.other_toast,Toast.LENGTH_SHORT).show();
+                setStatus("Busy");
                 break;
 
         }
@@ -231,6 +234,26 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         }
     }
 
+    private void setUpNotificationsButton() {
+        String uid = firebaseAuth.getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    notificationsEnabled = snapshot.child("notificationsEnabled").getValue(Boolean.class);
+                    if(notificationsEnabled) btnNotification.setText(R.string.btn_notifications_stop);
+                    else btnNotification.setText(R.string.btn_notifications);
+                }
+                else {}
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
     private void notificationsHandler(){
         if(!notificationsEnabled){
             Toast.makeText(getContext(), R.string.enable_notifications,Toast.LENGTH_SHORT).show();
@@ -247,6 +270,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
             notificationsEnabled = false;
             btnNotification.setText(R.string.btn_notifications);
         }
+    }
+
+    private void setStatus(String status){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("status", status);
+        editor.apply();
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(uid).child("status").setValue(status);
     }
 
     /**

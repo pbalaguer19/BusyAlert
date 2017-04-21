@@ -14,6 +14,7 @@ public class UserInfo {
     public String phone;
     public String network;
     public String token;
+    public boolean notificationsEnabled;
 
     public UserInfo(String username, String email, String phone,String token) {
         this.username = username;
@@ -22,6 +23,7 @@ public class UserInfo {
         this.phone = phone;
         this.network = Network.ANY;
         this.token = token;
+        this.notificationsEnabled = false;
     }
 
     public String getUsername() {
@@ -72,6 +74,14 @@ public class UserInfo {
 
     public String getToken() {
         return token;
+    }
+
+    public boolean isNotificationsEnabled() {
+        return notificationsEnabled;
+    }
+
+    public void setNotificationsEnabled(boolean notificationsEnabled) {
+        this.notificationsEnabled = notificationsEnabled;
     }
 
     private class Status{

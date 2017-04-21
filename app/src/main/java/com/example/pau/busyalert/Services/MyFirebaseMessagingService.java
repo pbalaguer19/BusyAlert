@@ -13,6 +13,12 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.example.pau.busyalert.Activities.MainActivity;
 import com.example.pau.busyalert.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -21,10 +27,30 @@ import com.google.firebase.messaging.RemoteMessage;
  */
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    private boolean notificationsEnabled;
+
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage){
-        if(remoteMessage.getNotification() != null)
-            sendNotification(remoteMessage.getNotification().getBody());
+    public void onMessageReceived(final RemoteMessage remoteMessage){
+        final RemoteMessage rM = remoteMessage;
+
+        /* We need to check if notifications are enabled */
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    notificationsEnabled = snapshot.child("notificationsEnabled").getValue(Boolean.class);
+                    if(rM.getNotification() != null)
+                        sendNotification(rM.getNotification().getBody());
+                }
+                else {}
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     private void sendNotification(String body) {
