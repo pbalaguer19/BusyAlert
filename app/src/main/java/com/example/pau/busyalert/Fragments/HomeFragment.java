@@ -2,10 +2,13 @@ package com.example.pau.busyalert.Fragments;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -63,6 +67,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     private static int DISPLACEMENT = 10; // 10 meters
 
     private SharedPreferences sharedPreferences;
+    private boolean canAccessToNetwork;
 
     /**
      * FIREBASE
@@ -124,8 +129,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         textView = (TextView) root.findViewById(R.id.name);
         statusText = (TextView) root.findViewById(R.id.status);
 
-        getUserInfo();
-        addUserListener();
+        checkNetwork();
+        if(canAccessToNetwork){
+            getUserInfo();
+            addUserListener();
+        }else{
+            new AlertDialog.Builder(getContext())
+                    .setMessage(R.string.network_fail)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.yes, null)
+                    .setNegativeButton(R.string.no, null)
+                    .show();
+        }
 
         btnMonitoring.setOnClickListener(this);
         btnNotification.setOnClickListener(this);
@@ -139,8 +154,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     @Override
     public void onResume() {
         super.onResume();
-        getUserInfo();
-        addUserListener();
+        checkNetwork();
+        if(canAccessToNetwork){
+            getUserInfo();
+            addUserListener();
+        }else{
+            new AlertDialog.Builder(getContext())
+                    .setMessage(R.string.network_fail)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.yes, null)
+                    .setNegativeButton(R.string.no, null)
+                    .show();
+        }
 
         if(monitorEnabled) btnMonitoring.setText(R.string.btn_monitoring_stop);
         else btnMonitoring.setText(R.string.btn_monitoring);
@@ -292,6 +317,28 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
         ref.child(uid).child("status").setValue(status);
+    }
+
+    private void checkNetwork(){
+        final boolean wifiConnected, mobileConnected;
+
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+        if (activeInfo != null && activeInfo.isConnected()) {
+            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+        } else {
+            wifiConnected = false;
+            mobileConnected = false;
+        }
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String sPref = sharedPrefs.getString("networkList", "WIFI");
+        canAccessToNetwork = (((sPref.equals("ANY")) &&
+                                (wifiConnected || mobileConnected))
+                                || ((sPref.equals("WIFI")) && (wifiConnected)));
     }
 
     /**

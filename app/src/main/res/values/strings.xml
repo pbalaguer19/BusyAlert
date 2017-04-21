@@ -25,6 +25,7 @@
     <string name="no">No</string>
     <string name="update">Update contacts</string>
     <string name="contacts_updated">Contacts updated!</string>
+    <string name="network_settings">We cannot access to the network so you can\'t save the changes</string>
 
     <!-- SOCIAL -->
     <string name="no_numbers">No phone numbers found</string>
@@ -50,6 +51,7 @@
     <string name="disable_notifications">The notifications are disabled</string>
     <string name="enable_monitoring">Monitoring has started</string>
     <string name="disable_monitoring">Monitoring has stopped</string>
+    <string name="network_fail">We cannot access to network so the information will be outdated</string>
 
     <!-- NOTIFICATIONS -->
     <string name="driving">"You are driving! "</string>

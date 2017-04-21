@@ -43,6 +43,8 @@ public class SettingsActivity extends PreferenceActivity implements
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
     private boolean isSureToContinue = false;
     private String lastName = "";
+    private boolean canAccessToNetwork;
+
 
     /**
      * FIREBASE
@@ -56,6 +58,7 @@ public class SettingsActivity extends PreferenceActivity implements
         addPreferencesFromResource(R.xml.preferences);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         firebaseAuth = FirebaseAuth.getInstance();
+        checkNetworkState();
         initSettings();
     }
 
@@ -64,23 +67,32 @@ public class SettingsActivity extends PreferenceActivity implements
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         Preference pref = findPreference(s);
 
-        if (pref instanceof EditTextPreference) {
-            EditTextPreference editTextPreference = (EditTextPreference) pref;
-            if(!lastName.equals(editTextPreference.getText())){
-                this.lastName = editTextPreference.getText();
-                editTextPreference.setSummary(editTextPreference.getText());
-                setFirebase("username", editTextPreference.getText());
+        if(canAccessToNetwork){
+            if (pref instanceof EditTextPreference) {
+                EditTextPreference editTextPreference = (EditTextPreference) pref;
+                if(!lastName.equals(editTextPreference.getText())){
+                    this.lastName = editTextPreference.getText();
+                    editTextPreference.setSummary(editTextPreference.getText());
+                    setFirebase("username", editTextPreference.getText());
+                }
+            }else if (pref instanceof ListPreference) {
+                if(s.equals("status")){
+                    ListPreference listPreference = (ListPreference) pref;
+                    listPreference.setSummary(listPreference.getValue());
+                    Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
+                    setFirebase("status" ,listPreference.getValue());
+                }else if(s.equals("networkList")){
+                    setFirebase("network" ,((ListPreference) pref).getValue());
+                    Toast.makeText(this, ((ListPreference) pref).getValue(),Toast.LENGTH_SHORT).show();
+                }
             }
-        }else if (pref instanceof ListPreference) {
-            if(s.equals("status")){
-                ListPreference listPreference = (ListPreference) pref;
-                listPreference.setSummary(listPreference.getValue());
-                Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
-                setFirebase("status" ,listPreference.getValue());
-            }else if(s.equals("networkList")){
-                setFirebase("network" ,((ListPreference) pref).getValue());
-                Toast.makeText(this, ((ListPreference) pref).getValue(),Toast.LENGTH_SHORT).show();
-            }
+        }else{
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.network_settings)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.yes, null)
+                    .setNegativeButton(R.string.no, null)
+                    .show();
         }
     }
 
@@ -141,6 +153,29 @@ public class SettingsActivity extends PreferenceActivity implements
         update.setOnPreferenceClickListener(this);
     }
 
+    private void checkNetworkState(){
+        final boolean wifiConnected, mobileConnected;
+
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+        if (activeInfo != null && activeInfo.isConnected()) {
+            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+        } else {
+            wifiConnected = false;
+            mobileConnected = false;
+        }
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String sPref = sharedPrefs.getString("networkList", "WIFI");
+        canAccessToNetwork = (((sPref.equals("ANY")) &&
+                (wifiConnected || mobileConnected))
+                || ((sPref.equals("WIFI")) && (wifiConnected)));
+    }
+
+    /* This is for the Update Contacts Option */
     private void checkNetwork(){
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);

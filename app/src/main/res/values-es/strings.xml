@@ -74,5 +74,8 @@
     <string name="contacts_updated">Contactos actualizados!</string>
     <string name="empty_list_favourites">Actualizar usuarios favoritos</string>
     <string name="empty_list">Actualizar lista de contactos</string>
+    <string name="network_fail">No se puede acceder a la red por lo que la informacion será antiquada</string>
+    <string name="network_settings">No se puede acceder a la red por lo que los cambios no seran aplicados</string>
+
 
 </resources>

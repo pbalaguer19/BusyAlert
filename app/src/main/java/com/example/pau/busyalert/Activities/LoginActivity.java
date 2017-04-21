@@ -96,6 +96,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }else if(dSnap.getKey().equals("status")) {
                             String value = dSnap.getValue(String.class);
                             sharedPreferences.edit().putString("status", value).apply();
+                        }else if(dSnap.getKey().equals("network")) {
+                            String value = dSnap.getValue(String.class);
+                            sharedPreferences.edit().putString("networkList", value).apply();
                         }
                     }
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
