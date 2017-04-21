@@ -71,9 +71,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     else {
                                         Toast.makeText(getApplicationContext(), getString(R.string.connection_ok), Toast.LENGTH_SHORT).show();
                                         getUserInfo();
-                                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                        startActivity(i);
-                                        finish();
                                     }
                                 }
                             });
@@ -101,6 +98,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             sharedPreferences.edit().putString("status", value).apply();
                         }
                     }
+                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(i);
+                    finish();
                 }
             }
 

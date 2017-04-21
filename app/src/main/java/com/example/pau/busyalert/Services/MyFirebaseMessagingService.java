@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.widget.Toast;
 
 import com.example.pau.busyalert.Activities.MainActivity;
 import com.example.pau.busyalert.R;
@@ -33,6 +34,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(final RemoteMessage remoteMessage){
         final RemoteMessage rM = remoteMessage;
 
+        final String friendUid = remoteMessage.getData().get("uid");
+
         /* We need to check if notifications are enabled */
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
@@ -41,8 +44,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     notificationsEnabled = snapshot.child("notificationsEnabled").getValue(Boolean.class);
-                    if(rM.getNotification() != null)
-                        sendNotification(rM.getNotification().getBody());
+                    if(notificationsEnabled && rM.getNotification() != null)
+                        isInFavouriteList(friendUid, rM.getNotification().getBody());
                 }
                 else {}
             }
@@ -76,6 +79,40 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    private void isInFavouriteList(String friendUid, final String body){
+        /* FriendUID -> FriendPhone -> is in my favourite list? */
+        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(friendUid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String friendPhone = snapshot.child("phone").getValue(String.class);
+
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("favourite-users");
+                    ref.child(uid).child(friendPhone).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                sendNotification(body);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
 }

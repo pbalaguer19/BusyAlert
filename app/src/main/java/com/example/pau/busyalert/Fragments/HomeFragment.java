@@ -259,17 +259,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
             Toast.makeText(getContext(), R.string.enable_notifications,Toast.LENGTH_SHORT).show();
             notificationsEnabled = true;
             btnNotification.setText(R.string.btn_notifications_stop);
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext());
-            builder.setContentTitle(getString(R.string.app_name));
-            builder.setSmallIcon(R.mipmap.ic_launcher);
-            builder.setContentText(getString(R.string.test_notification));
-            NotificationManagerCompat.from(getContext()).notify(0, builder.build());
 
         }else{
             Toast.makeText(getContext(), R.string.disable_notifications,Toast.LENGTH_SHORT).show();
             notificationsEnabled = false;
             btnNotification.setText(R.string.btn_notifications);
         }
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(uid).child("notificationsEnabled").setValue(notificationsEnabled);
     }
 
     private void setStatus(String status){
