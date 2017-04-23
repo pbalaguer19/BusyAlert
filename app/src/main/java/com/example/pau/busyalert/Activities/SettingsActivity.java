@@ -43,6 +43,7 @@ public class SettingsActivity extends PreferenceActivity implements
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
     private boolean isSureToContinue = false;
     private String lastName = "";
+    private String lastStatus = "";
     private boolean canAccessToNetwork;
 
 
@@ -78,9 +79,13 @@ public class SettingsActivity extends PreferenceActivity implements
             }else if (pref instanceof ListPreference) {
                 if(s.equals("status")){
                     ListPreference listPreference = (ListPreference) pref;
-                    listPreference.setSummary(listPreference.getValue());
-                    Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
-                    setFirebase("status" ,listPreference.getValue());
+                    String st = listPreference.getValue();
+                    if(!lastStatus.equals(st)){
+                        this.lastStatus = st;
+                        listPreference.setSummary(st);
+                        Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
+                        setFirebase("status" , st);
+                    }
                 }else if(s.equals("networkList")){
                     setFirebase("network" ,((ListPreference) pref).getValue());
                     Toast.makeText(this, ((ListPreference) pref).getValue(),Toast.LENGTH_SHORT).show();
