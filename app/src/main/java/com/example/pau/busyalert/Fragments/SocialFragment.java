@@ -18,6 +18,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.pau.busyalert.Adapters.UserAdapter;
+import com.example.pau.busyalert.Interfaces.HerokuEndpointInterface;
+import com.example.pau.busyalert.JavaClasses.ApiUtils;
+import com.example.pau.busyalert.JavaClasses.HerokuLog;
 import com.example.pau.busyalert.R;
 import com.example.pau.busyalert.JavaClasses.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,6 +33,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class SocialFragment extends ListFragment implements AdapterView.OnItemLongClickListener,
@@ -48,10 +55,17 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
      **/
     private FirebaseAuth firebaseAuth;
 
+    /**
+     * HEROKU
+     */
+    private HerokuEndpointInterface apiService;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         firebaseAuth = FirebaseAuth.getInstance();
+        apiService = ApiUtils.getAPIService();
+
         if(firstTime){
             getContacts();
             firstTime = false;
@@ -246,9 +260,21 @@ public class SocialFragment extends ListFragment implements AdapterView.OnItemLo
                     for (DataSnapshot dSnap: snapshot.getChildren()) {
                         String friendUid = dSnap.getKey();
 
+                        String extra = "FriendUid: " + friendUid;
+                        apiService.createLog(uid, "FAVOURITE_ADDED", extra).enqueue(new Callback<HerokuLog>() {
+                            @Override
+                            public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
+                            }
+
+                            @Override
+                            public void onFailure(Call<HerokuLog> call, Throwable t) {
+
+                            }
+                        });
+
+
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
                         ref.child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
-
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
