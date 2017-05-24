@@ -20,6 +20,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.pau.busyalert.Interfaces.HerokuEndpointInterface;
+import com.example.pau.busyalert.JavaClasses.ApiUtils;
+import com.example.pau.busyalert.JavaClasses.HerokuLog;
 import com.example.pau.busyalert.JavaClasses.UserInfo;
 import com.example.pau.busyalert.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,6 +38,10 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener,
         DialogInterface.OnClickListener{
@@ -54,6 +61,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
      * FIREBASE
      **/
     private FirebaseAuth firebaseAuth;
+
+    /**
+     * HEROKU
+     */
+    private HerokuEndpointInterface apiService;
 
     /*
      * Registration activity handles the following steps:
@@ -77,6 +89,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
+
+        apiService = ApiUtils.getAPIService();
     }
 
     //ONCLICK VIEW//
@@ -152,6 +166,19 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         UserInfo userInfo = new UserInfo(mail.split("@")[0], mail, phone, token);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
         ref.child(uid).setValue(userInfo);
+
+        String extra = "Email: " + email + " | Phone: " + phone;
+        apiService.createLog(uid, "NEW_USER", extra).enqueue(new Callback<HerokuLog>() {
+            @Override
+            public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
+            }
+
+            @Override
+            public void onFailure(Call<HerokuLog> call, Throwable t) {
+
+            }
+        });
+
     }
 
     private void saveUserPhoneRelation(String phone){
