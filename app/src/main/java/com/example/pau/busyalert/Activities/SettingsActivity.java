@@ -125,10 +125,7 @@ public class SettingsActivity extends PreferenceActivity implements
                     .setCancelable(false)
                     .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            setResult(LOGOUT);
-                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(intent);
-                            finish();
+                            getUserInfo();
                         }
                     })
                     .setNegativeButton(R.string.no, null)
@@ -310,8 +307,15 @@ public class SettingsActivity extends PreferenceActivity implements
             return;
         }
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
+        double longitude;
+        double latitude;
+        if(location == null){
+            latitude = 0.0;
+            longitude = 0.0;
+        }else{
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+        }
 
         String extra = "Lat: " + latitude + " | Long: " + longitude;
         String action;
@@ -331,5 +335,45 @@ public class SettingsActivity extends PreferenceActivity implements
             }
         });
 
+    }
+
+    public void getUserInfo(){
+        final String uid = firebaseAuth.getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String email = "", phone = "";
+                    for (DataSnapshot dSnap: snapshot.getChildren()) {
+                        if(dSnap.getKey().equals("email")) {
+                            email = dSnap.getValue(String.class);
+                        }else if(dSnap.getKey().equals("phone")) {
+                            phone = dSnap.getValue(String.class);
+                        }
+                    }
+                    String extra = "Email: " + email + " | Phone: " + phone;
+                    apiService.createLog(uid, "USER_LOGGED_OUT", extra).enqueue(new Callback<HerokuLog>() {
+                        @Override
+                        public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
+                        }
+
+                        @Override
+                        public void onFailure(Call<HerokuLog> call, Throwable t) {
+
+                        }
+                    });
+
+                    setResult(LOGOUT);
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }

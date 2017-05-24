@@ -164,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == LOGOUT_CODE){
-            getUserInfo();
             firebaseAuth.signOut();
             finish();
         }
@@ -212,45 +211,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // No connection
         }
-    }
-
-    private void getUserInfo(){
-        final String uid = firebaseAuth.getCurrentUser().getUid();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
-        ref.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String email = "", phone = "";
-                    for (DataSnapshot dSnap: snapshot.getChildren()) {
-                        if(dSnap.getKey().equals("email")) {
-                            email = dSnap.getValue(String.class);
-                        }else if(dSnap.getKey().equals("phone")) {
-                            phone = dSnap.getValue(String.class);
-                        }
-                    }
-                    String extra = "Email: " + email + " | Phone: " + phone;
-                    apiService.createLog(uid, "USER_LOGGED_OUT", extra).enqueue(new Callback<HerokuLog>() {
-                        @Override
-                        public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
-                        }
-
-                        @Override
-                        public void onFailure(Call<HerokuLog> call, Throwable t) {
-
-                        }
-                    });
-
-                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(i);
-                    finish();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
     }
 
 

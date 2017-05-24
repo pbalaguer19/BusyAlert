@@ -91,8 +91,15 @@ public class ActivityRecognitionService extends IntentService {
             return;
         }
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
+        double longitude;
+        double latitude;
+        if(location == null){
+            latitude = 0.0;
+            longitude = 0.0;
+        }else{
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+        }
 
         String extra = "Lat: " + latitude + " | Long: " + longitude;
         String action;
