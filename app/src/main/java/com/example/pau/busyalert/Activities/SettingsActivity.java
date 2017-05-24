@@ -19,6 +19,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -28,7 +29,12 @@ import com.example.pau.busyalert.Interfaces.HerokuEndpointInterface;
 import com.example.pau.busyalert.JavaClasses.ApiUtils;
 import com.example.pau.busyalert.JavaClasses.HerokuLog;
 import com.example.pau.busyalert.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,6 +44,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashSet;
 import java.util.Set;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -125,7 +132,7 @@ public class SettingsActivity extends PreferenceActivity implements
                     .setCancelable(false)
                     .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            getUserInfo();
+                            getUserInfo("USER_LOGGED_OUT");
                         }
                     })
                     .setNegativeButton(R.string.no, null)
@@ -133,6 +140,17 @@ public class SettingsActivity extends PreferenceActivity implements
         }else if(preference.getKey().equals("update")){
             checkNetwork();
             if(this.isSureToContinue) updateContacts();
+        }else if(preference.getKey().equals("delete")){
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.delete_sure)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            deleteAccount();
+                        }
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .show();
         }
 
         return true;
@@ -169,6 +187,9 @@ public class SettingsActivity extends PreferenceActivity implements
 
         Preference update = findPreference("update");
         update.setOnPreferenceClickListener(this);
+
+        Preference delete = findPreference("delete");
+        delete.setOnPreferenceClickListener(this);
     }
 
     private void checkNetworkState(){
@@ -337,7 +358,7 @@ public class SettingsActivity extends PreferenceActivity implements
 
     }
 
-    public void getUserInfo(){
+    public void getUserInfo(final String action){
         final String uid = firebaseAuth.getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
         ref.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -353,7 +374,7 @@ public class SettingsActivity extends PreferenceActivity implements
                         }
                     }
                     String extra = "Email: " + email + " | Phone: " + phone;
-                    apiService.createLog(uid, "USER_LOGGED_OUT", extra).enqueue(new Callback<HerokuLog>() {
+                    apiService.createLog(uid, action, extra).enqueue(new Callback<HerokuLog>() {
                         @Override
                         public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
                         }
@@ -368,6 +389,87 @@ public class SettingsActivity extends PreferenceActivity implements
                     Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                     startActivity(intent);
                     finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void deleteAcc(){
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        // Get auth credentials from the user for re-authentication. The example below shows
+        // email and password credentials but there are multiple possible providers,
+        // such as GoogleAuthProvider or FacebookAuthProvider.
+        AuthCredential credential = EmailAuthProvider
+                .getCredential("user@example.com", "password1234");
+
+        // Prompt the user to re-provide their sign-in credentials
+        user.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        user.delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(getApplicationContext(), "Account deleted",Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
+                    }
+                });
+
+        setResult(LOGOUT);
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public void deleteAccount(){
+        final String uid = firebaseAuth.getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
+        ref.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String email = "", phone = "";
+                    for (DataSnapshot dSnap: snapshot.getChildren()) {
+                        if(dSnap.getKey().equals("email")) {
+                            email = dSnap.getValue(String.class);
+                        }else if(dSnap.getKey().equals("phone")) {
+                            phone = dSnap.getValue(String.class);
+                        }
+                    }
+                    String extra = "Email: " + email + " | Phone: " + phone;
+                    apiService.createLog(uid, "USER_UNSUBSCRIBED", extra).enqueue(new Callback<HerokuLog>() {
+                        @Override
+                        public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
+                        }
+
+                        @Override
+                        public void onFailure(Call<HerokuLog> call, Throwable t) {
+
+                        }
+                    });
+
+                    apiService.deleteLogs(uid).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                        }
+                    });
+
+                    deleteAcc();
                 }
             }
 

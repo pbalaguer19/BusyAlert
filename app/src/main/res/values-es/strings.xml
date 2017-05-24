@@ -76,6 +76,8 @@
     <string name="empty_list">Actualizar lista de contactos</string>
     <string name="network_fail">No se puede acceder a la red por lo que la informacion será antiquada</string>
     <string name="network_settings">No se puede acceder a la red por lo que los cambios no seran aplicados</string>
+    <string name="delete">Eliminar cuenta</string>
+    <string name="delete_sure">Estas seguro que quieres eliminar tu cuenta?</string>
 
 
 </resources>

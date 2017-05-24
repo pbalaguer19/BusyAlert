@@ -26,6 +26,9 @@
     <string name="update">Update contacts</string>
     <string name="contacts_updated">Contacts updated!</string>
     <string name="network_settings">We cannot access to the network so you can\'t save the changes</string>
+    <string name="delete">Delete account</string>
+    <string name="delete_sure">Are you sure you want to delete your account?</string>
+
 
     <!-- SOCIAL -->
     <string name="no_numbers">No phone numbers found</string>

@@ -54,6 +54,10 @@
             android:title="@string/logout"
             android:key="logout"/>
 
+        <Preference
+            android:title="@string/delete"
+            android:key="delete"/>
+
 
     </PreferenceCategory>
 

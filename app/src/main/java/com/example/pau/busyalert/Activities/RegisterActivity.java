@@ -167,7 +167,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
         ref.child(uid).setValue(userInfo);
 
-        String extra = "Email: " + email + " | Phone: " + phone;
+        String extra = "Email: " + mail + " | Phone: " + phone;
         apiService.createLog(uid, "NEW_USER", extra).enqueue(new Callback<HerokuLog>() {
             @Override
             public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
