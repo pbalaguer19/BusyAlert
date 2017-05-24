@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.pau.busyalert.Interfaces.HerokuEndpointInterface;
+import com.example.pau.busyalert.JavaClasses.ApiUtils;
+import com.example.pau.busyalert.JavaClasses.HerokuLog;
 import com.example.pau.busyalert.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -21,6 +24,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -33,6 +40,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      **/
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
+
+    /**
+     * HEROKU
+     */
+    private HerokuEndpointInterface apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +61,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         databaseReference = db.getReference();
         firebaseAuth = FirebaseAuth.getInstance();
+
+        apiService = ApiUtils.getAPIService();
     }
 
 
@@ -81,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getUserInfo(){
-        String uid = firebaseAuth.getCurrentUser().getUid();
+        final String uid = firebaseAuth.getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -89,6 +103,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+                    String email = "", phone = "";
                     for (DataSnapshot dSnap: snapshot.getChildren()) {
                         if(dSnap.getKey().equals("username")) {
                             String value = dSnap.getValue(String.class);
@@ -99,8 +114,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }else if(dSnap.getKey().equals("network")) {
                             String value = dSnap.getValue(String.class);
                             sharedPreferences.edit().putString("networkList", value).apply();
+                        }else if(dSnap.getKey().equals("email")) {
+                            email = dSnap.getValue(String.class);
+                        }else if(dSnap.getKey().equals("phone")) {
+                            phone = dSnap.getValue(String.class);
                         }
                     }
+                    String extra = "Email: " + email + " | Phone: " + phone;
+                    apiService.createLog(uid, "USER_LOGGED_IN", extra).enqueue(new Callback<HerokuLog>() {
+                        @Override
+                        public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
+                        }
+
+                        @Override
+                        public void onFailure(Call<HerokuLog> call, Throwable t) {
+
+                        }
+                    });
+
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(i);
                     finish();
