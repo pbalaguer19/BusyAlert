@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -30,6 +31,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pau.busyalert.BroadcastReceivers.LocatBroadcastReciver;
+import com.example.pau.busyalert.Interfaces.HerokuEndpointInterface;
+import com.example.pau.busyalert.JavaClasses.ApiUtils;
+import com.example.pau.busyalert.JavaClasses.HerokuLog;
 import com.example.pau.busyalert.JavaClasses.User;
 import com.example.pau.busyalert.R;
 import com.google.android.gms.common.ConnectionResult;
@@ -44,6 +48,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -70,21 +78,26 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     private boolean canAccessToNetwork;
 
     /**
+     * HEROKU
+     */
+    private HerokuEndpointInterface apiService;
+
+    /**
      * FIREBASE
      **/
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
-    private  DatabaseReference ref;
+    private DatabaseReference ref;
     private ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot snapshot) {
             if (snapshot.exists()) {
-                for (DataSnapshot dSnap: snapshot.getChildren()) {
-                    if(dSnap.getKey().equals("username")) {
+                for (DataSnapshot dSnap : snapshot.getChildren()) {
+                    if (dSnap.getKey().equals("username")) {
                         String value = dSnap.getValue(String.class);
                         textView.setText(value);
                         sharedPreferences.edit().putString("username_key", value).apply();
-                    }else if(dSnap.getKey().equals("status")) {
+                    } else if (dSnap.getKey().equals("status")) {
                         String value = dSnap.getValue(String.class);
                         statusText.setText(value);
                         sharedPreferences.edit().putString("status", value).apply();
@@ -114,6 +127,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         databaseReference = db.getReference();
         firebaseAuth = FirebaseAuth.getInstance();
 
+        apiService = ApiUtils.getAPIService();
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // First we need to check availability of play services
@@ -130,10 +145,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         statusText = (TextView) root.findViewById(R.id.status);
 
         checkNetwork();
-        if(canAccessToNetwork){
+        if (canAccessToNetwork) {
             getUserInfo();
             addUserListener();
-        }else{
+        } else {
             new AlertDialog.Builder(getContext())
                     .setMessage(R.string.network_fail)
                     .setCancelable(false)
@@ -155,10 +170,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     public void onResume() {
         super.onResume();
         checkNetwork();
-        if(canAccessToNetwork){
+        if (canAccessToNetwork) {
             getUserInfo();
             addUserListener();
-        }else{
+        } else {
             new AlertDialog.Builder(getContext())
                     .setMessage(R.string.network_fail)
                     .setCancelable(false)
@@ -167,16 +182,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
                     .show();
         }
 
-        if(monitorEnabled) btnMonitoring.setText(R.string.btn_monitoring_stop);
+        if (monitorEnabled) btnMonitoring.setText(R.string.btn_monitoring_stop);
         else btnMonitoring.setText(R.string.btn_monitoring);
 
-        if(notificationsEnabled) btnNotification.setText(R.string.btn_notifications_stop);
+        if (notificationsEnabled) btnNotification.setText(R.string.btn_notifications_stop);
         else btnNotification.setText(R.string.btn_notifications);
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btnMonitoring:
                 monitoringHandler();
                 break;
@@ -200,11 +215,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.optMeeting:
                 setStatus("Busy");
                 break;
-            case  R.id.optSleeping:
+            case R.id.optSleeping:
                 setStatus("Busy");
                 break;
             case R.id.optOther:
@@ -213,9 +228,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
 
         }
         return super.onContextItemSelected(item);
-   }
+    }
 
-    private void getUserInfo(){
+    private void getUserInfo() {
         String uid = firebaseAuth.getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
 
@@ -223,11 +238,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    for (DataSnapshot dSnap: snapshot.getChildren()) {
-                        if(dSnap.getKey().equals("username")) {
+                    for (DataSnapshot dSnap : snapshot.getChildren()) {
+                        if (dSnap.getKey().equals("username")) {
                             String value = dSnap.getValue(String.class);
                             textView.setText(value);
-                        }else if(dSnap.getKey().equals("status")) {
+                        } else if (dSnap.getKey().equals("status")) {
                             String value = dSnap.getValue(String.class);
                             statusText.setText(value);
                         }
@@ -241,30 +256,29 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         });
     }
 
-    private void addUserListener(){
+    private void addUserListener() {
         String uid = firebaseAuth.getCurrentUser().getUid();
         this.ref = FirebaseDatabase.getInstance().getReference("users");
 
         ref.child(uid).addValueEventListener(valueEventListener);
     }
 
-    private void removeUserListener(){
+    private void removeUserListener() {
         String uid = firebaseAuth.getCurrentUser().getUid();
-       this.ref = FirebaseDatabase.getInstance().getReference("users");
+        this.ref = FirebaseDatabase.getInstance().getReference("users");
 
         ref.child(uid).removeEventListener(valueEventListener);
     }
 
 
-
-    private void monitoringHandler(){
-        if(!monitorEnabled){
-            Toast.makeText(getContext(), R.string.enable_monitoring,Toast.LENGTH_SHORT).show();
+    private void monitoringHandler() {
+        if (!monitorEnabled) {
+            Toast.makeText(getContext(), R.string.enable_monitoring, Toast.LENGTH_SHORT).show();
             monitorEnabled = true;
             startLocationPendingIntent();
             btnMonitoring.setText(R.string.btn_monitoring_stop);
-        }else{
-            Toast.makeText(getContext(), R.string.disable_monitoring,Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), R.string.disable_monitoring, Toast.LENGTH_SHORT).show();
             monitorEnabled = false;
             stopLocationPendingIntent();
             btnMonitoring.setText(R.string.btn_monitoring);
@@ -279,10 +293,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     notificationsEnabled = snapshot.child("notificationsEnabled").getValue(Boolean.class);
-                    if(notificationsEnabled) btnNotification.setText(R.string.btn_notifications_stop);
+                    if (notificationsEnabled)
+                        btnNotification.setText(R.string.btn_notifications_stop);
                     else btnNotification.setText(R.string.btn_notifications);
+                } else {
                 }
-                else {}
             }
 
             @Override
@@ -291,14 +306,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         });
     }
 
-    private void notificationsHandler(){
-        if(!notificationsEnabled){
-            Toast.makeText(getContext(), R.string.enable_notifications,Toast.LENGTH_SHORT).show();
+    private void notificationsHandler() {
+        if (!notificationsEnabled) {
+            Toast.makeText(getContext(), R.string.enable_notifications, Toast.LENGTH_SHORT).show();
             notificationsEnabled = true;
             btnNotification.setText(R.string.btn_notifications_stop);
 
-        }else{
-            Toast.makeText(getContext(), R.string.disable_notifications,Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), R.string.disable_notifications, Toast.LENGTH_SHORT).show();
             notificationsEnabled = false;
             btnNotification.setText(R.string.btn_notifications);
         }
@@ -308,7 +323,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         ref.child(uid).child("notificationsEnabled").setValue(notificationsEnabled);
     }
 
-    private void setStatus(String status){
+    private void setStatus(String status) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("status", status);
@@ -317,6 +332,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
         ref.child(uid).child("status").setValue(status);
+
+        LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        double longitude = location.getLongitude();
+        double latitude = location.getLatitude();
+
+        String extra = "Lat: " + latitude + " | Long: " + longitude;
+        String action;
+        if(status.equals("Busy"))
+            action = "STATUS_BUSY";
+        else
+            action = "STATUS_AVAILABLE";
+
+        apiService.createLog(uid, action, extra).enqueue(new Callback<HerokuLog>() {
+            @Override
+            public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
+            }
+
+            @Override
+            public void onFailure(Call<HerokuLog> call, Throwable t) {
+
+            }
+        });
+
     }
 
     private void checkNetwork(){

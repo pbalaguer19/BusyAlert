@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -22,6 +24,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
+import com.example.pau.busyalert.Interfaces.HerokuEndpointInterface;
+import com.example.pau.busyalert.JavaClasses.ApiUtils;
+import com.example.pau.busyalert.JavaClasses.HerokuLog;
 import com.example.pau.busyalert.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +37,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SettingsActivity extends PreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener,
@@ -52,6 +61,11 @@ public class SettingsActivity extends PreferenceActivity implements
      **/
     private FirebaseAuth firebaseAuth;
 
+    /**
+     * HEROKU
+     */
+    private HerokuEndpointInterface apiService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +73,7 @@ public class SettingsActivity extends PreferenceActivity implements
         addPreferencesFromResource(R.xml.preferences);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         firebaseAuth = FirebaseAuth.getInstance();
+        apiService = ApiUtils.getAPIService();
         checkNetworkState();
         initSettings();
     }
@@ -85,6 +100,7 @@ public class SettingsActivity extends PreferenceActivity implements
                         listPreference.setSummary(st);
                         Toast.makeText(this, R.string.status_changed,Toast.LENGTH_SHORT).show();
                         setFirebase("status" , st);
+                        setStatus(st);
                     }
                 }else if(s.equals("networkList")){
                     setFirebase("network" ,((ListPreference) pref).getValue());
@@ -281,5 +297,39 @@ public class SettingsActivity extends PreferenceActivity implements
         String uid = firebaseAuth.getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");
         ref.child(uid).child(child).setValue(type);
+    }
+
+    private void setStatus(String status) {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        double longitude = location.getLongitude();
+        double latitude = location.getLatitude();
+
+        String extra = "Lat: " + latitude + " | Long: " + longitude;
+        String action;
+        if(status.equals("Busy"))
+            action = "STATUS_BUSY";
+        else
+            action = "STATUS_AVAILABLE";
+
+        apiService.createLog(uid, action, extra).enqueue(new Callback<HerokuLog>() {
+            @Override
+            public void onResponse(Call<HerokuLog> call, Response<HerokuLog> response) {
+            }
+
+            @Override
+            public void onFailure(Call<HerokuLog> call, Throwable t) {
+
+            }
+        });
+
     }
 }
