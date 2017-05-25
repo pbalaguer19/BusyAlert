@@ -78,6 +78,6 @@
     <string name="network_settings">No se puede acceder a la red por lo que los cambios no seran aplicados</string>
     <string name="delete">Eliminar cuenta</string>
     <string name="delete_sure">Estas seguro que quieres eliminar tu cuenta?</string>
-
+    <string name="hiscoric">Mi historial</string>
 
 </resources>

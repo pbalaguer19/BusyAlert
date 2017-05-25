@@ -47,6 +47,10 @@
             android:key="status" />
 
         <Preference
+            android:title="@string/hiscoric"
+            android:key="historic"/>
+
+        <Preference
             android:title="@string/update"
             android:key="update"/>
 

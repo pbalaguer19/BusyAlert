@@ -27,6 +27,7 @@
     <string name="contacts_updated">Contacts updated!</string>
     <string name="network_settings">We cannot access to the network so you can\'t save the changes</string>
     <string name="delete">Delete account</string>
+    <string name="hiscoric">My historial</string>
     <string name="delete_sure">Are you sure you want to delete your account?</string>
 
 
@@ -82,7 +83,7 @@
     <string name="register">Register</string>
     <string name="new_account">Create Account</string>
     <string name="repeat_password">Repeat Password</string>
-    
+
     <!-- LOGIN AND REGISTER -->
     <string name="connection_no">Invalid credentials</string>
     <string name="connection_ok">Connection completed</string>

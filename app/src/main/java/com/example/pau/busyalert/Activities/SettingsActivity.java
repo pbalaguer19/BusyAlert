@@ -151,6 +151,10 @@ public class SettingsActivity extends PreferenceActivity implements
                     })
                     .setNegativeButton(R.string.no, null)
                     .show();
+        }else if(preference.getKey().equals("historic")) {
+            Intent intent = new Intent(this, HistoricActivity.class);
+            startActivity(intent);
+            finish();
         }
 
         return true;
