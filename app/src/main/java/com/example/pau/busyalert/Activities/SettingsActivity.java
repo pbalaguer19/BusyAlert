@@ -194,6 +194,9 @@ public class SettingsActivity extends PreferenceActivity implements
 
         Preference delete = findPreference("delete");
         delete.setOnPreferenceClickListener(this);
+
+        Preference historic = findPreference("historic");
+        historic.setOnPreferenceClickListener(this);
     }
 
     private void checkNetworkState(){
