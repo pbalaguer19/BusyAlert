@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="status">
+        <item>Disponible</item>
+        <item>Ocupado</item>
+    </string-array>
+
+    <string-array name="network_options">
+        <item>Solo Wi-Fi</item>
+        <item>Cualquier red</item>
+    </string-array>
+
+    <string-array name="network_values">
+        <item>WIFI</item>
+        <item>ANY</item>
+    </string-array>
+</resources>
